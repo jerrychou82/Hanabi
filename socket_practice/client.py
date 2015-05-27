@@ -2,7 +2,7 @@ import socket
 import sys
 
 
-if __name__ == '__main__':
+def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(("linux6.csie.ntu.edu.tw", int(sys.argv[1])))
 
@@ -14,3 +14,7 @@ if __name__ == '__main__':
     jsock.connect(("linux6.csie.ntu.edu.tw", judge_port))
     msg = jsock.recv(1024)
     print msg
+
+
+if __name__ == '__main__':
+    main()
