@@ -1,0 +1,14 @@
+AP rules :
+
+1. accept all connections to server
+
+2. accept all connections from server
+
+3. drop all connections from one client to another
+
+
+iptables -A FORWARD -i eth0 -d "server ip" -j ACCEPT
+
+iptables -A FORWARD -i eth0 -s "server ip" -j ACCEPT
+
+iptables -A FORWARD -i eth0 -j REJECT 
