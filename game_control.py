@@ -2,7 +2,7 @@
 This module defines several classes that will be used in game system.
 
 """
-from socket import socket
+import socket
 
 
 class User:
