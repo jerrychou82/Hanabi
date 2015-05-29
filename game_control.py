@@ -45,7 +45,7 @@ class User:
 class Room:
 
     def __init__(self, roomID=None, room_status=None,
-                 user_list=None, user_status=None):
+                 user_list=None, user_status=None, max_user_num=4):
         """
         :type roomID: int
         :param roomID: ID of the room
@@ -59,11 +59,15 @@ class Room:
         :type user_status: list (of strings)
         :param user_status: list of ths status of all users in this room
 
+        :type max_user_num: int
+        :param max_user_num: maximum number of users in this room
+
         """
         self.roomID = roomID
         self.room_status = room_status
         self.user_list = user_list
         self.user_status = user_status
+        self.max_unum = max_user_num
 
 
 class Judge:
