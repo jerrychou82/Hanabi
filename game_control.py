@@ -17,11 +17,11 @@ class User:
         :type uname: string
         :param uname: name of the user
 
-        :type uID: int
-        :param uID: ID of the user
+        :type userID: int
+        :param userID: ID of the user
 
-        :type uIP: string
-        :param uIP: IPv4 address of the user
+        :type userIP: string
+        :param userIP: IPv4 address of the user
 
         :type usock: socket object
         :param usock: socket of the user
@@ -35,8 +35,8 @@ class User:
         """
         self.status = status
         self.uname = username
-        self.uID = userID
-        self.uIP = userIP
+        self.userID = userID
+        self.userIP = userIP
         self.usock = usock
         self.roomID = roomID
         self.gameID = gameID
