@@ -2,24 +2,29 @@
 This module defines several classes that will be used in game system.
 
 """
+from socket import socket
+
 
 class User:
 
-    def __init__(self, status,
-                 username, userID, userIP,
-                 roomID, gameID):
+    def __init__(self, status="CONN",
+                 username=None, userID=None, userIP=None, usock=None,
+                 roomID=None, gameID=None):
         """
         :type status: string
         :param status: IDLE, ROOM, GAME, CONN
 
-        :type username: string
-        :param username: name of the user
+        :type uname: string
+        :param uname: name of the user
 
-        :type userID: int
-        :param userID: ID of the user
+        :type uID: int
+        :param uID: ID of the user
 
-        :type userIP: string
-        :param userIP: IPv4 address of the user
+        :type uIP: string
+        :param uIP: IPv4 address of the user
+
+        :type usock: socket object
+        :param usock: socket of the user
 
         :type roomID: int
         :param roomID: ID of the room where the user in
@@ -29,17 +34,18 @@ class User:
 
         """
         self.status = status
-        self.username = username
-        self.userID = userID
-        self.userIP = userIP
+        self.uname = username
+        self.uID = userID
+        self.uIP = userIP
+        self.usock = usock
         self.roomID = roomID
         self.gameID = gameID
 
 
 class Room:
 
-    def __init__(self, roomID, room_status,
-                 user_list, user_status):
+    def __init__(self, roomID=None, room_status=None,
+                 user_list=None, user_status=None):
         """
         :type roomID: int
         :param roomID: ID of the room
@@ -62,10 +68,10 @@ class Room:
 
 class Judge:
 
-    def __init__(self, judgeID,
-                 room_in_charge,
-                 game_info,
-                 port):
+    def __init__(self, judgeID=None,
+                 room_in_charge=None,
+                 game_info=None,
+                 port=None):
         """
         :type judgeID: int
         :param judgeID: ID of the judge
