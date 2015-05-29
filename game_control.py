@@ -7,20 +7,20 @@ import socket
 
 class User:
 
-    def __init__(self, status="CONN",
-                 username=None, userID=None, userIP=None, usock=None,
+    def __init__(self, ustatus="CONN",
+                 uname=None, uID=None, uIP=None, usock=None,
                  roomID=None, gameID=None):
         """
-        :type status: string
-        :param status: IDLE, ROOM, GAME, CONN
+        :type ustatus: string
+        :param ustatus: IDLE, ROOM, GAME, CONN
 
         :type uname: string
         :param uname: name of the user
 
-        :type userID: int
+        :type uID: int
         :param userID: ID of the user
 
-        :type userIP: string
+        :type uIP: string
         :param userIP: IPv4 address of the user
 
         :type usock: socket object
@@ -33,10 +33,10 @@ class User:
         :param gameID: ID of the game which the user is involved
 
         """
-        self.status = status
-        self.uname = username
-        self.userID = userID
-        self.userIP = userIP
+        self.ustatus = ustatus
+        self.uname = uname
+        self.uID = uID
+        self.uIP = uIP
         self.usock = usock
         self.roomID = roomID
         self.gameID = gameID
@@ -44,14 +44,14 @@ class User:
 
 class Room:
 
-    def __init__(self, roomID=None, room_status="WAIT",
+    def __init__(self, rID=None, rstatus="WAIT",
                  user_list=[], user_status=[], max_unum=4):
         """
-        :type roomID: int
-        :param roomID: ID of the room
+        :type rID: int
+        :param rID: ID of the room
 
-        :type room_status: string
-        :param room_status: WAIT, PLAY
+        :type rstatus: string
+        :param rstatus: WAIT, PLAY
 
         :type user_list: list
         :param user_list: list of User objects
@@ -63,8 +63,8 @@ class Room:
         :param max_unum: maximum number of users in this room
 
         """
-        self.roomID = roomID
-        self.room_status = room_status
+        self.rID = rID
+        self.rstatus = rstatus
         self.user_list = user_list
         self.user_status = user_status
         self.max_unum = max_unum
@@ -72,13 +72,13 @@ class Room:
 
 class Judge:
 
-    def __init__(self, judgeID=None,
+    def __init__(self, jID=None,
                  room_in_charge=None,
                  game_info=None,
                  port=None):
         """
-        :type judgeID: int
-        :param judgeID: ID of the judge
+        :type jID: int
+        :param jID: ID of the judge
 
         :type room_in_charge: Room object
         :param room_in_charge: room the judge is currently in charge of
@@ -90,7 +90,7 @@ class Judge:
         :param port: port number of the judge
 
         """
-        self.judgeID = judgeID
+        self.jID = judgeID
         self.room_in_charge = room_in_charge
         # TODO: don't understand what game_info is ...
         self.game_info = None
@@ -98,8 +98,8 @@ class Judge:
 
 
 def main():
-    user = User(status="CONN",
-                username="andyyuan", userID=16, userIP="140.112.90.192",
+    user = User(ustatus="CONN",
+                uname="andyyuan", uID=16, uIP="140.112.90.192",
                 roomID=1, gameID=1)
 
 
