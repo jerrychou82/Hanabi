@@ -70,6 +70,21 @@ class Room:
         self.max_unum = max_unum
 
 
+class Unode:
+
+    def __init__(self, uname=None, ustatus=None):
+        self.uname = uname
+        self.ustatus = ustatus
+
+
+class Rnode:
+
+    def  __init__(self, rID=None, max_unum=None, cur_unum=None):
+        self.rID = rID
+        self.max_unum = max_unum
+        self.cur_unum = cur_unum
+
+
 class Judge:
 
     def __init__(self, jID=None,
