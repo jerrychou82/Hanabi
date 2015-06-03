@@ -44,6 +44,8 @@ class User:
 
 class Room:
 
+    total_num = 0
+
     def __init__(self, roomID=None, room_status="WAIT",
                  user_list=[], user_status=[], max_unum=4):
         """
@@ -63,7 +65,8 @@ class Room:
         :param max_unum: maximum number of users in this room
 
         """
-        self.roomID = roomID
+        self.roomID = Room.total_num
+        Room.total_num += 1
         self.room_status = room_status
         self.user_list = user_list
         self.user_status = user_status

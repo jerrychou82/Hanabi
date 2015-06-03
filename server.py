@@ -27,11 +27,11 @@ timeout = 1
 
 
 # fake rooms
-room = Room(roomID=123)
+room = Room()
 room_list.append(room)
-room = Room(roomID=456)
+room = Room()
 room_list.append(room)
-room = Room(roomID=789)
+room = Room()
 room_list.append(room)
 
 
@@ -61,11 +61,32 @@ while 1:
                     msg_list = msg.split(' ')
                     if msg_list[0] == "login":
                         user.uname = msg_list[1]
-                        s.send(("ACK").encode('UTF-8'))
+                        s.send(("login ACK").encode('UTF-8'))
                         print("New user: " + msg_list[1])
                     elif msg_list[0] == "update":
                         info = make_lobby_info(user_list, room_list)
+                        info = "update " + info
                         s.send(info.encode('UTF-8'))
+                        print("Send: " + info)
+                    elif msg_list[0] == "croom":
+                        if len(msg_list) != 3 or int(msg_list[2]) < 4 or int(msg_list[2]) > 6:
+                            s.send(("croom DENY").encode('UTF-8'))
+                            print("Create room deny")
+                        else:
+                            user_list = []
+                            user_list.append(user)
+                            room = Room(user_list=user_list, max_unum=int(msg_list[2]))
+                            room_list.append(room)
+                            s.send(("croom ACK").encode('UTF-8'))
+                            print("Create room")
+                    elif msg_list[0] == "groom":
+                        rid = int(msg_list[1])
+                        if rid < 0 or rid >= Room.total_num:
+                            s.send(("groom DENY".encode('UTF-8')))
+                            print("Go to room deny")
+                        else:
+                            room = romm_list[rid]
+                            print("Go to room: ")
                 else:
                     print("Nonmatched")
 
