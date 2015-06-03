@@ -7,8 +7,15 @@ AP rules :
 3. drop all connections from one client to another
 
 
-iptables -A FORWARD -i eth0 -d "server ip" -j ACCEPT
+iptables -A FORWARD -i br0 -d 192.168.1.143 -j ACCEPT
 
-iptables -A FORWARD -i eth0 -s "server ip" -j ACCEPT
+iptables -A FORWARD -i br0 -s 192.168.1.143 -j ACCEPT
 
-iptables -A FORWARD -i eth0 -j REJECT 
+iptables -A FORWARD -i br0 -j REJECT 
+
+iptables -A INPUT -i br0 -s 192.168.1.143 -j ACCEPT
+
+iptables -A INPUT -i br0 -d 192.168.1.143 -j ACCEPT
+
+iptables -A INPUT -i br0 -j REJECT
+
