@@ -38,12 +38,18 @@ def sJudge():
     time.sleep(10000000)
 
 
-def sRoom():
+def sRoom(ssock):  #In fact this function will have a port input and create a new socket itself
     print ('inside room XD')
-    time.sleep(10000000)
-'''
+
     (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
-'''
+    for i in inputready:
+		if i == 0:
+            buff = input()
+			buf = buff.split(' ')
+			if (is_number(buf[1]) == False):
+				print ('QQ')
+
+
 
 
 def main():
