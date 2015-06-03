@@ -57,11 +57,10 @@ while 1:
                 if s == user.usock: # user send message
                     print("Matched")
                     data = s.recv(4096)
-                    """
-                    if len(data) == 0: # user leave
+                    if not data: # user leave
                         print(user.uname + " leaves")
                         user_list.remove(user)
-                    """
+                        rqueue.remove(user.usock)
                     msg = data.decode('UTF-8')
                     msg_list = msg.split(' ')
                     if msg_list[0] == "login":
