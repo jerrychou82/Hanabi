@@ -44,14 +44,14 @@ class User:
 
 class Room:
 
-    def __init__(self, rID=None, rstatus="WAIT",
+    def __init__(self, rID=None, rstatus="EMPTY",
                  user_list=[], user_status=[], max_unum=4):
         """
         :type rID: int
         :param rID: ID of the room
 
         :type rstatus: string
-        :param rstatus: WAIT, PLAY
+        :param rstatus: EMPTY, WAIT, PLAY
 
         :type user_list: list
         :param user_list: list of User objects
