@@ -11,26 +11,26 @@ class User:
                  uname=None, uID=None, uIP=None, usock=None,
                  roomID=None, gameID=None):
         """
-        :type ustatus: string
-        :param ustatus: IDLE, ROOM, GAME, CONN
+        :type   ustatus: string
+        :param  ustatus: IDLE, ROOM, GAME, CONN
 
-        :type uname: string
-        :param uname: name of the user
+        :type   uname: string
+        :param  uname: name of the user
 
-        :type uID: int
-        :param userID: ID of the user
+        :type   uID: int
+        :param  userID: ID of the user
 
-        :type uIP: string
-        :param userIP: IPv4 address of the user
+        :type   uIP: string
+        :param  userIP: IPv4 address of the user
 
-        :type usock: socket object
-        :param usock: socket of the user
+        :type   usock: socket object
+        :param  usock: socket of the user
 
-        :type roomID: int
-        :param roomID: ID of the room where the user in
+        :type   roomID: int
+        :param  roomID: ID of the room where the user in
 
-        :type gameID: int
-        :param gameID: ID of the game which the user is involved
+        :type   gameID: int
+        :param  gameID: ID of the game which the user is involved
 
         """
         self.ustatus = ustatus
@@ -49,20 +49,20 @@ class Room:
     def __init__(self, rID=None, rstatus="EMPTY",
                  user_list=[], user_status=[], max_unum=4):
         """
-        :type rID: int
-        :param rID: ID of the room
+        :type   rID: int
+        :param  rID: ID of the room
 
-        :type rstatus: string
-        :param rstatus: EMPTY, WAIT, PLAY
+        :type   rstatus: string
+        :param  rstatus: EMPTY, WAIT, PLAY
 
-        :type user_list: list
-        :param user_list: list of User objects
+        :type   user_list: list
+        :param  user_list: list of User objects
 
-        :type user_status: list (of strings)
-        :param user_status: list of ths status of all users in this room
+        :type   user_status: list (of strings)
+        :param  user_status: list of ths status of all users in this room
 
-        :type max_unum: int
-        :param max_unum: maximum number of users in this room
+        :type   max_unum: int
+        :param  max_unum: maximum number of users in this room
 
         """
         self.rID = rID
@@ -92,32 +92,7 @@ class Rnode:
         self.cur_unum = cur_unum
 
 
-class Judge:
-
-    def __init__(self, jID=None,
-                 room_in_charge=None,
-                 game_info=None,
-                 port=None):
-        """
-        :type jID: int
-        :param jID: ID of the judge
-
-        :type room_in_charge: Room object
-        :param room_in_charge: room the judge is currently in charge of
-
-        :type game_info:
-        :param game_info:
-
-        :type port: int
-        :param port: port number of the judge
-
-        """
-        self.jID = judgeID
-        self.room_in_charge = room_in_charge
-        # TODO: don't understand what game_info is ...
-        self.game_info = None
-        self.port = port
-
+        
 
 def main():
     user = User(ustatus="CONN",
