@@ -1,4 +1,7 @@
+import os
+import time
 from game_control import *
+from judge import *
 
 class Server:
         
@@ -28,7 +31,7 @@ class Server:
         csock.send(("ACK").encode('UTF-8'))
         print("Send ACK")
         self.rqueue.append(csock)        # client socket
-        user = User(usock=csock)           
+        user = User(usock=csock, uIP=addr)           
         self.user_list.append(user)      # user
         if user.usock == csock:
             print("Success")
@@ -148,17 +151,37 @@ class Server:
                         print(user.uname + " unready!")
 
         elif msg_list[0] == "start":
-            print(str(user.uname) + " clicks start!")
             rid = int(msg_list[1])
+            print(str(user.uname) + " clicks start! Room owner: " + str(self.room_list[rid].user_list[0].uname))
             if user.usock == self.room_list[rid].user_list[0].usock:
+                print(str(user.uname) + " is the room owmer!")
                 rflag = 1
                 for i in range(len(self.room_list[rid].user_list)):
-                    if self.room_list[rid].user_list[i].ustatus != "READY":
+                    if self.room_list[rid].user_status[i] != "READY":
                         rflag = 0
+                        print(str(self.room_list[rid].user_list[i].uname) + "'s status: " + self.room_list[rid].user_list[i].ustatus)
                         break
-                if len(self.room_list[rid] != 0 and rflag == 1):
+                if len(self.room_list[rid].user_list) != 0 and rflag == 1:
                     s.send("start ACK".encode('UTF-8'))
                     print("Start permitted")
+
+                    # start a judge
+                    pid = os.fork()
+                    jport = len(self.judge_list) + 5100
+
+                    if pid == 0:
+                        judge_IP_list = []
+                        for u in self.room_list[rid].user_list:
+                            judge_IP_list.append(u.uIP)
+                        judge = Judge(jID=len(self.judge_list), port=jport, room_in_charge=rid, IP_list=judge_IP_list)
+                        judge.run()
+                    
+                    print("Fork judge")
+                    time.sleep(1)
+                    for u in self.room_list[rid].user_list:
+                        msg = "startgame " + str(jport)
+                        u.usock.send(msg.encode('UTF-8'))
+
                     return
             
             s.send("start DENY".encode('UTF-8'))
