@@ -41,6 +41,8 @@ class User:
         self.roomID = roomID
         self.gameID = gameID
 
+    def show_user(self):
+        print("Name: " + str(self.uname) + " Status: " + self.ustatus)
 
 class Room:
 
@@ -68,6 +70,11 @@ class Room:
         self.user_list = user_list
         self.user_status = user_status
         self.max_unum = max_unum
+
+    def show_room(self):
+        print("ID: " + str(self.rID) + " Status: " + self.rstatus)
+        for i in range(len(self.user_list)):
+            print("  " + str(self.user_list[i].uname) + " Status " + self.user_status[i])
 
 
 class Unode:
