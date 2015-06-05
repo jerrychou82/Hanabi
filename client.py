@@ -33,12 +33,39 @@ def dump_roomlist(r_list):
         print ('\trID ' + str(r.rID) + ' max_unum ' + str(r.max_unum) + ' cur_unum ' + str(r.cur_unum))
 
 
-def sJudge():  #TODO maybe should have some arguments...?
-    print ('inside judge XD')
-    time.sleep(10000000)
+def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
+    print ('[judge ' + str(rID) + '] inside judge XD')
+
+    print ('Now connect to ' + str(hanabi_addr) + ':' + str(jport) + '...')
+    jsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    jsock.connect((str(hanabi_addr), jport))
 
 
-def sRoom(rID):  #TODO In fact this function will have a port input and create a new socket itself
+    while (True):  # game init
+        print ('[judge ' + str(rID) + '] waiting for judge command...')
+        (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
+        for i in inputready:
+            if i == 0:
+                print ('TODO...')
+            elif i == ssock:
+                data = ssock.recv(4096)  # take those msg, it must be 'startgame portID'
+                tmp = 'startgame ACK'
+                ssock.send(tmp.encode('UTF-8'))
+            elif i == jsock:
+                data = jsock.recv(4096)
+                print ('[judge ' + str(rID) + '] recv from server \'' + data.decode('UTF-8') + '\'')
+                print ('TODO...')
+                break
+
+    while (True):  # game loop
+        print ('[judge ' + str(rID) + '] inside game loop XD')
+        (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
+        for i in inputready:
+            if i == 0:
+                print ('TODO...')
+
+
+def sRoom(hanabi_addr, rID):  #TODO In fact this function will have a port input and create a new socket itself
     print ('[room ' + str(rID) + '] inside room XD')
 
     while (True):
@@ -65,8 +92,12 @@ def sRoom(rID):  #TODO In fact this function will have a port input and create a
             if i == ssock:
                 data = ssock.recv(4096)
                 print ('[room ' + str(rID) + '] recv from server \'' + data.decode('UTF-8') + '\'')
-                if (data.decode == 'start ACK'):
-                    sJudge()
+                buf = (data.decode('UTF-8')).split(" ")
+                if (len(buf) == 2 and buf[0] == 'startgame' and is_number(buf[1])):
+                    tmp = 'startgame ACK'
+                    ssock.send(tmp.encode('UTF-8'))
+                    sJudge(hanabi_addr, rID, int(buf[1]))
+                    break
 
 
 def main():
@@ -74,7 +105,8 @@ def main():
         print ('usage: python3 client.py [server addr] [port]')
         return
 
-    ssock.connect((sys.argv[1], int(sys.argv[2])))
+    hanabi_addr = sys.argv[1]
+    ssock.connect((hanabi_addr, int(sys.argv[2])))
 
     while (True):
         data = ssock.recv(4096)
@@ -164,7 +196,7 @@ def main():
                         print ('what i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'croom ACK'):  #it will have port number later...
                             print ('croom success')
-                            sRoom(int(buf[1]))
+                            sRoom(hanabi_addr, int(buf[1]))
                             break
                         else:
                             print ('croom fail')
@@ -186,7 +218,7 @@ def main():
                         print ('write i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'groom ACK'):
                             print ('groom success')
-                            sRoom(int(buf[1]))
+                            sRoom(hanabi_addr, int(buf[1]))
                             break
                         else:
                             print ('groom fail')
