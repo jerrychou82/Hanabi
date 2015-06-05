@@ -37,7 +37,7 @@ class Judge:
     def run(self):
         print("Judge: " + str(self.jID) + " Start!")
         self.conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn_sock.bind(socket.getaddr(), self.port)
+        self.conn_sock.bind((socket.gethostname(), self.port))
         self.conn_sock.listen(len(self.IP_list))
         self.rqueue = [self.conn_sock]
 
@@ -46,7 +46,7 @@ class Judge:
             rlist, wlist, elist = select.select(self.rqueue, [], [], 1)
 
             for s in rlist:
-                csock, addr = conn_sock.accept()
+                csock, addr = self.conn_sock.accept()
                 print("Client successfully connects!")
 
 
