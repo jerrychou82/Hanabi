@@ -22,7 +22,7 @@ conn_sock.listen(Server.MAX_PLAYER)
 rqueue      = [0, conn_sock]
 
 # server objct
-server  = Server(rqueue)
+server  = Server(rqueue, port_num)
 
 # select timeout
 timeout     = 1

@@ -9,7 +9,7 @@ class Server:
     MAX_PLAYER  = 20
     ROOM_NUM    = 20
 
-    def __init__(self, rqueue): 
+    def __init__(self, rqueue, port_num): 
     
         # list
         self.user_list  = []
@@ -22,7 +22,10 @@ class Server:
             self.room_list.append(room)
         
         # reading queue
-        self.rqueue          = rqueue
+        self.rqueue         = rqueue
+        
+        # port number
+        self.port_num       = port_num
 
     # user connection handle
     def user_con(self, conn_sock):
@@ -68,15 +71,25 @@ class Server:
         # select service
         if msg_list[0] == "login":
             user.uname = msg_list[1]
+            user.ustatus = "IDLE"
             s.send(("login ACK").encode('UTF-8'))
             print("New user: " + msg_list[1])
         
+        # client asks for the informations: player list, room list
         elif msg_list[0] == "update":
             info = make_lobby_info(self.user_list, self.room_list)
             info = "update " + info
             s.send(info.encode('UTF-8'))
             print("Send: " + info)
 
+        # client quits the game
+        elif msg_list[0] == "quit":
+            self.rqueue.remove(user.usock)
+            self.user_list.remove(user)
+            s.send("quit ACK".encode('UTF-8'))
+            print("user quit")
+
+        # client creates room
         elif msg_list[0] == "croom": # croom [room number] [room number]
             if len(msg_list) != 3 or int(msg_list[2]) < 4 or int(msg_list[2]) > 6:
                 s.send(("croom DENY").encode('UTF-8'))
@@ -89,9 +102,10 @@ class Server:
                     s.send(("croom DENY").encode('UTF-8'))
                     print("Create room deny: wrong room number")
                 else:
+                    user.ustatus        = "ROOM"
                     room = self.room_list[rid]
-                    room_user_list           = []
-                    room_user_status         = []
+                    room_user_list      = []
+                    room_user_status    = []
                     room_user_list.append(user)
                     room_user_status.append("UNREADY")
                     room.user_list      = room_user_list
@@ -101,6 +115,7 @@ class Server:
                     s.send(("croom ACK").encode('UTF-8'))
                     print("Create room")
         
+        # client goes to room
         elif msg_list[0] == "groom": # groom [room num]
             rid = int(msg_list[1])
             if rid < 0 or rid >= Server.ROOM_NUM:
@@ -109,6 +124,7 @@ class Server:
             else:
                 room = self.room_list[rid]
                 if len(room.user_list) < room.max_unum:
+                    user.ustatus = "ROOM"
                     room.user_list.append(user)
                     room.user_status.append("UNREADY")
                     print("Go to room: " + str(rid))
@@ -117,6 +133,31 @@ class Server:
                     s.send(("groom DENY".encode('UTF-8')))
                     print("Go to room deny: room full")
 
+        # client leaves the room
+        elif msg_list[0] == "leave":
+            rid = int(msg_list[1])
+            if rid < 0 or rid >= Server.ROOM_NUM:
+                s.send(("leave DENY".encode('UTF-8')))
+                print("Leave room deny")
+            else:
+                room = self.room_list[rid]
+                uindex = -1
+                for i in range(len(room.user_list)):
+                    if user.uIP == room.user_list[i].uIP:
+                        uindex = i
+                        break
+                if uindex != -1: # find the client
+                    del room.user_status[uindex]
+                    del room.user_list[uindex]
+                    user.ustatus = "IDLE"
+                    s.send("leave ACK".encode('UTF-8'))
+                    print("Leave ACK")
+                else: # the client is not in this room
+                    s.send(("leave DENY".encode('UTF-8')))
+                    print("Leave room deny: client not in room")
+
+
+        # client sets ready in the room
         elif msg_list[0] == "ready" or msg_list[0] == "unready":
             rid = int(msg_list[1])
             if rid < 0 or rid >= Server.ROOM_NUM:
@@ -150,6 +191,7 @@ class Server:
                         s.send("unready ACK".encode('UTF-8'))
                         print(user.uname + " unready!")
 
+        # client clicks start in the room
         elif msg_list[0] == "start":
             rid = int(msg_list[1])
             print(str(user.uname) + " clicks start! Room owner: " + str(self.room_list[rid].user_list[0].uname))
@@ -169,7 +211,7 @@ class Server:
 
                     pipein, pipeout = os.pipe()
 
-                    jport = len(self.judge_list) + 5100
+                    jport = len(self.judge_list) + self.port_num + 10
                     pid = os.fork()
 
                     if pid == 0:
