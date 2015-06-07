@@ -10,23 +10,7 @@ class Judge:
                  game_info=None,
                  port=None,
                  IP_list=[]):
-
-        """
-        :type   jID: int
-        :param  jID: ID of the judge
-
-        :type   room_in_charge: Room object
-        :param  room_in_charge: room the judge is currently in charge of
-
-        :type   game_info:
-        :param  game_info:
-
-        :type   port: int
-        :param  port: port number of the judge
-
-        :type   IP_list: a list of user IP
-
-        """
+        
         self.jID = jID
         self.room_in_charge = room_in_charge
         # TODO: don't understand what game_info is ...
@@ -34,6 +18,7 @@ class Judge:
         self.port = port
         self.IP_list = IP_list
 
+    # execute after init
     def run(self):
         print("Judge: " + str(self.jID) + " Start!")
         self.conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

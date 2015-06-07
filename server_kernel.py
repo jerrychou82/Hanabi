@@ -166,10 +166,14 @@ class Server:
                     print("Start permitted")
 
                     # start a judge
-                    pid = os.fork()
+
+                    pipein, pipeout = os.pipe()
+
                     jport = len(self.judge_list) + 5100
+                    pid = os.fork()
 
                     if pid == 0:
+                        os.write(pipeout, "This message is from pipe".encode('UTF-8'))
                         judge_IP_list = []
                         for u in self.room_list[rid].user_list:
                             judge_IP_list.append(u.uIP)
@@ -178,6 +182,8 @@ class Server:
                     
                     print("Fork judge")
                     time.sleep(1)
+                    line = os.read(pipein, 32)
+                    print(line.decode('UTF-8'))
                     for u in self.room_list[rid].user_list:
                         msg = "startgame " + str(jport)
                         u.usock.send(msg.encode('UTF-8'))
