@@ -41,6 +41,7 @@ class User:
         self.usock = usock
         self.roomID = roomID
         self.gameID = gameID
+        
 
     def show_user(self):
         print("Name: " + str(self.uname) + " Status: " + self.ustatus)
