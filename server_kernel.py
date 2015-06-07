@@ -54,6 +54,9 @@ class Server:
                 data = s.recv(4096)
                 if not data: # user leave
                     print(user.uname + " leaves")
+                    rid = user.roomID
+                    room = self.room_list[rid]
+                    room.user_list.remove(user)
                     self.user_list.remove(user)
                     self.rqueue.remove(user.usock)
                 msg = data.decode('UTF-8')
@@ -103,7 +106,9 @@ class Server:
                     print("Create room deny: wrong room number")
                 else:
                     user.ustatus        = "ROOM"
+                    user.roomID         = rid
                     room = self.room_list[rid]
+                    room.rstatus        = "WAIT"
                     room_user_list      = []
                     room_user_status    = []
                     room_user_list.append(user)
@@ -203,15 +208,21 @@ class Server:
                         rflag = 0
                         print(str(self.room_list[rid].user_list[i].uname) + "'s status: " + self.room_list[rid].user_list[i].ustatus)
                         break
+
                 if len(self.room_list[rid].user_list) != 0 and rflag == 1:
                     s.send("start ACK".encode('UTF-8'))
                     print("Start permitted")
 
-                    # start a judge
+                    # update status of user and room
+                    for ustatus in self.room_list[rid].user_status:
+                        ustatus = "GAME"
+                    for u in self.room_list[rid].user_list:
+                        u.ustatus = "GAME"
+                    self.room_list[rid].rstatus = "GAME"    
 
+                    # start judge
                     pipein, pipeout = os.pipe()
-
-                    jport = len(self.judge_list) + self.port_num + 10
+                    jport = rid + self.port_num + 10
                     pid = os.fork()
 
                     if pid == 0:

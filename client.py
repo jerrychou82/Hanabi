@@ -40,6 +40,8 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     jsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     jsock.connect((str(hanabi_addr), jport))
 
+    gameID = -1
+    game_player_num = -1
 
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
@@ -61,9 +63,18 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                 data = jsock.recv(4096)
                 print ('[judge ' + str(rID) + '] recv from jsock \'' + data.decode('UTF-8') + '\'')
                 time.sleep(2)
-                buf = data.decode('UTF-8')
-                if (buf == 'startgame'):
+                buff = data.decode('UTF-8')
+                buf = buff.split(" ")
+                if (buf[0] == 'startgame'): # stargame and serve result
                     ok = True
+                    gameID = int(buf[1])
+                    game_player_num = int(buf[2])
+                    # handle serve result
+                    for i in range(game_player_num):
+                        print("player" + str(i) + ": ")
+                        for j in range(4):
+                            print("  (" + str(buf[2+8*i+2*j]) + ", " + str(buf[2+8*i+2*j+1]) + ")")
+
                     break
         if (ok == True):
             break
