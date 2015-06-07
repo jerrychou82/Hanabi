@@ -48,15 +48,19 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
         ok = False
         for i in inputready:
             if i == 0:
-                print ('TODO...')
+                data = input()
+                print ('[judge ' + str(rID) + '] what you type is \'' + data + '\'')
+                #TODO...
             elif i == ssock:
                 data = ssock.recv(4096)  # take those msg, it must be 'startgame portID'
                 print ('[judge ' + str(rID) + '] recv from ssock \'' + data.decode('UTF-8') + '\'')
+                time.sleep(2)
                 tmp = 'startgame ACK'
                 ssock.send(tmp.encode('UTF-8'))
             elif i == jsock:
                 data = jsock.recv(4096)
                 print ('[judge ' + str(rID) + '] recv from jsock \'' + data.decode('UTF-8') + '\'')
+                time.sleep(2)
                 buf = data.decode('UTF-8')
                 if (buf == 'startgame'):
                     ok = True
