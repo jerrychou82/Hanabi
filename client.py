@@ -44,29 +44,40 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
         (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
+
+        ok = False
         for i in inputready:
             if i == 0:
                 print ('TODO...')
             elif i == ssock:
                 data = ssock.recv(4096)  # take those msg, it must be 'startgame portID'
+                print ('[judge ' + str(rID) + '] recv from ssock \'' + data.decode('UTF-8') + '\'')
                 tmp = 'startgame ACK'
                 ssock.send(tmp.encode('UTF-8'))
             elif i == jsock:
                 data = jsock.recv(4096)
-                print ('[judge ' + str(rID) + '] recv from server \'' + data.decode('UTF-8') + '\'')
-                print ('TODO...')
-                break
+                print ('[judge ' + str(rID) + '] recv from jsock \'' + data.decode('UTF-8') + '\'')
+                buf = data.decode('UTF-8')
+                if (buf == 'startgame'):
+                    ok = True
+                    break
+        if (ok == True):
+            break
 
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
-        (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
+        (inputready, outputready, exceptrdy) = select.select([0, jsock], [], [])
         for i in inputready:
             if i == 0:
                 print ('TODO...')
+            elif i == jsock:
+                print ('TODO...')
 
 
-def sRoom(hanabi_addr, rID):  #TODO In fact this function will have a port input and create a new socket itself
+def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
     print ('[room ' + str(rID) + '] inside room XD')
+
+    leave = False
 
     while (True):
         print ('[room ' + str(rID) + '] waiting for user command...')
@@ -87,6 +98,11 @@ def sRoom(hanabi_addr, rID):  #TODO In fact this function will have a port input
                     tmp = 'start ' + str(rID)
                     print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
                     ssock.send(tmp.encode('UTF-8'))
+                elif (len(buf) == 2 and buf[0] == 'leave' and is_number(buf[1])):
+                    tmp = 'leave ' + str(rID)
+                    print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
+                    time.sleep(2)
+                    ssock.send(tmp.encode('UTF-8'))
                 else:
                     print ('nothing happen')
             if i == ssock:
@@ -97,7 +113,12 @@ def sRoom(hanabi_addr, rID):  #TODO In fact this function will have a port input
                     tmp = 'startgame ACK'
                     ssock.send(tmp.encode('UTF-8'))
                     sJudge(hanabi_addr, rID, int(buf[1]))
+                elif (len(buf) == 2 and buf[0] == 'leave' and buf[1] == 'ACK'):
+                    leave = True
                     break
+
+        if (leave == True):
+            break
 
 
 def main():
@@ -128,6 +149,7 @@ def main():
         if (msg == 'login ACK'):
             break
     
+    byebye = False
 
     while (True):
         print ('Now in lobby!')
@@ -139,6 +161,11 @@ def main():
                 #TODO
                 buff = input()
                 buf = buff.split(' ')
+
+                if (len(buf) < 1):
+                    print ('error: does not get any msg')
+                    continue
+
                 msg = buf[0]
                 if (msg == 'update'):
                     print ('Now update...')
@@ -179,8 +206,6 @@ def main():
                         room_list.append(rr)
                     dump_roomlist(room_list)
 
-                        
-
                 elif (msg == 'croom'):
                     print ('Now croom...')
                     if (len(buf) != 3 or is_number(buf[1]) == False or is_number(buf[2]) == False):
@@ -188,7 +213,7 @@ def main():
                         continue
 
                     print ('i will send \'' + buff + '\'')
-                    time.sleep(3)
+                    time.sleep(2)
                     ssock.send(buff.encode('UTF-8'))  #TODO if this message lose
                     #TODO fork to room process?
                     while (True):
@@ -196,7 +221,7 @@ def main():
                         print ('what i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'croom ACK'):  #it will have port number later...
                             print ('croom success')
-                            sRoom(hanabi_addr, int(buf[1]))
+                            sRoom(hanabi_addr, ssock, int(buf[1]))
                             break
                         else:
                             print ('croom fail')
@@ -210,21 +235,36 @@ def main():
                         continue
 
                     print ('i will send \'' + buff + '\'')
-                    time.sleep(3)
+                    time.sleep(2)
                     ssock.send(buff.encode('UTF-8'))
 
                     while (True):
                         data = ssock.recv(4096)
-                        print ('write i recv is ' + data.decode('UTF-8'))
+                        print ('what i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'groom ACK'):
                             print ('groom success')
-                            sRoom(hanabi_addr, int(buf[1]))
+                            sRoom(hanabi_addr, ssock, int(buf[1]))
                             break
                         else:
                             print ('groom fail')
                             break
+                
+                elif (msg == 'quit'):
+                    print ('Now quit...')
+                    
+                    ssock.send(msg.encode('UTF-8'))
+
+                    while (True):
+                        data = ssock.recv(4096)
+                        print ('what i recv is ' + data.decode('UTF-8'))
+                        if (data.decode('UTF-8') == 'quit ACK'):
+                            print ('quit success')
+                            byebye = True
+                            break
+
                 else:
                     print ('nani?')
+
             else:  # select from ssock
                 print ('recv from server automatically ^.<')
                 buff = ssock.recv(4096)
@@ -259,6 +299,10 @@ def main():
                 else:
                     print ('nani?')
     
+        if (byebye == True):
+            break
+
+    ssock.close()
 
 
 if __name__ == '__main__':
