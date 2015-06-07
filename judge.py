@@ -40,7 +40,6 @@ class Judge:
             for s in rlist:
                 csock, addr = self.conn_sock.accept()
                 print("Client successfully connects!: " + str(addr))
-                self.csock_list.append(csock)
                 uindex = -1
                 for i in range(len(self.IP_list)):
                     if addr[0] == self.IP_list[i][0]:
@@ -48,7 +47,7 @@ class Judge:
                 if uindex != -1:
                     self.user_status[uindex] = "CONN"
                     self.conn_num += 1
-                    self.csock_list[uindex] = s
+                    self.csock_list[uindex] = csock
 
         print("Every player has connected!")
         for s in self.csock_list:
