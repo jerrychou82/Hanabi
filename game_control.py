@@ -3,6 +3,7 @@ This module defines several classes that will be used in game system.
 
 """
 import socket
+import random
 
 
 class User:
@@ -92,8 +93,6 @@ class Rnode:
         self.max_unum = max_unum
         self.cur_unum = cur_unum
 
-
-        
 
 def main():
     user = User(ustatus="CONN",
