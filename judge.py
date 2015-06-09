@@ -75,7 +75,8 @@ class Judge:
         serve_msg = self.shuffle_and_serve()
         
         for i in range(len(self.csock_list)):
-            info = "startgame " + str(i) + " " + str(self.conn_num) +  serve_msg
+            info = "startgame " + str(i) + " " + str(self.conn_num) + serve_msg[i]
+            print(info)
             self.csock_list[i].send(info.encode('UTF-8'))
             print("  Send startgame to: " + str(self.IP_list[i]))
 
@@ -93,13 +94,17 @@ class Judge:
         self.cur_card_index = 0
 
         # serve cards
-        msg = ""
+        msg = [""] * self.conn_num
         for playeridx in range(self.conn_num):
             for i in range(4):
                 cardID = self.desk[self.cur_card_index]
                 card = self.cardID_to_card(cardID)
                 self.cur_card_index += 1
-                msg += " " + str(card[0]) + " " + str(card[1])
+                for j in range(self.conn_num):
+                    if j == playeridx:
+                        msg[j] += " " + "-1" + " " + "-1"
+                    else:
+                        msg[j] += " " + str(card[0]) + " " + str(card[1])
 
         return msg
 

@@ -73,7 +73,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     for i in range(game_player_num):
                         print("player" + str(i) + ": ")
                         for j in range(4):
-                            print("  (" + str(buf[2+8*i+2*j]) + ", " + str(buf[2+8*i+2*j+1]) + ")")
+                            print("  (" + str(buf[2+8*i+2*j+1]) + ", " + str(buf[2+8*i+2*j+2]) + ")")
 
                     break
         if (ok == True):
