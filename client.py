@@ -86,7 +86,14 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
             if i == 0:
                 print ('TODO...')
             elif i == jsock:
-                print ('TODO...')
+                data = jsock.recv(4096)
+                msg = data.decode('UTF-8')
+                msg_list = msg.split(' ')
+
+                if msg_list[0] == "yourturn":
+                    # jsock.send("hit 1".encode('UTF-8'))
+                    jsock.send("hint 1 0 4".encode('UTF-8'))
+                    # jsock.send("throw 2".encode('UTF-8'))
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself

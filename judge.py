@@ -13,14 +13,16 @@ class Judge:
                  port=None,
                  IP_list=[]):
         
-        self.jID            = jID
-        self.room_in_charge = room_in_charge
-        self.game_info      = None
-        self.port           = port
-        self.IP_list        = IP_list
-        self.csock_list     = ['None']*len(IP_list)
-        self.conn_num       = 0
-        self.user_status    = []
+        self.jID                = jID
+        self.room_in_charge     = room_in_charge
+        self.game_info          = None
+        self.port               = port
+        self.IP_list            = IP_list
+        self.csock_list         = ['None']*len(IP_list)
+        self.conn_num           = 0
+        self.user_status        = []
+        self.cur_card_index     = 0
+        self.cur_player_index   = 0
 
         for i in range(len(IP_list)):
             self.user_status.append("UNCONN")
@@ -34,10 +36,12 @@ class Judge:
         while self.conn_num != len(self.IP_list):
             rlist, wlist, elist = select.select(self.rqueue, [], [], 1) 
             self.sock_handle(rlist)
-        self.after_conn()
+
+        # Game object init, suffle, and serve
+        self.game_init()
 
         # Start game
-        self.game_init()
+        self.game_start()
 
 
     # show the IP list of this judge
@@ -68,8 +72,10 @@ class Judge:
                 self.conn_num += 1
                 self.csock_list[uindex] = csock
 
+
     # shuffle the desk and inform every player after all the players have been connected
-    def after_conn(self):
+    def game_init(self):
+
         print("Every player has connected!")
 
         serve_msg = self.shuffle_and_serve()
@@ -79,19 +85,52 @@ class Judge:
             print(info)
             self.csock_list[i].send(info.encode('UTF-8'))
             print("  Send startgame to: " + str(self.IP_list[i]))
+        print("After shuffle and serving!")
 
-    # init game: shuffle, distribute cards
-    def game_init(self):
-  
-        # init Game
-        print("init Game")
+
+    def game_start(self):
+        
+        print("Start game!")
+
+        while self.cur_card_index != 50: # while there are still cards
+            
+            # send yourturn to player
+            cpidx = self.cur_player_index # current player index
+            self.csock_list[cpidx].send("yourturn".encode('UTF-8'))
+            data = self.csock_list[cpidx].recv(4096)
+            msg = data.decode('UTF-8')
+            msg_list = msg.split(' ')
+
+            if   msg_list[0] == "hit":
+                cidx    = int(msg_list[1]) # card index
+                print("Player" + str(cpidx) + " hits card: " + str(cidx))
+
+            elif msg_list[0] == "hint":
+                hpidx   = int(msg_list[1]) # hint player index
+                htype   = int(msg_list[2]) # hint type: 0: color; 1: number
+                hnum    = int(msg_list[3]) # hint number
+                print("Player" + str(cpidx) + "hints player " + str(hpidx) + " on ", end="")
+                if htype == "color":
+                    print("color " + str(hnum))
+                else:
+                    print("number " + str(hnum))
+
+
+            elif msg_list[0] == "throws":
+                cidx    = int(msg_list[1]) # card index
+                print("Player" + str(cpidx) + "throws")
+
+            # update next player
+            self.cur_player_index = (cpidx + 1) % self.conn_num
+            
+            self.cur_card_index += 1
+
 
     # shuffle the desk and return the serving result
     def shuffle_and_serve(self):
         # shuffle
         self.desk = list(range(50))
         shuffle(self.desk)
-        self.cur_card_index = 0
 
         # serve cards
         msg = [""] * self.conn_num
@@ -109,7 +148,7 @@ class Judge:
         return msg
 
     def cardID_to_card(self, cardID):
-        card_color = cardID // 10
+        card_color = 1 + (cardID // 10)
         res = cardID % 10
         if res <= 2:
             card_num = 1
