@@ -53,8 +53,8 @@ class Server:
                 print("Matched: " + str(user.uname))
                 data = s.recv(4096)
                 if not data: # user leave
-                    print(user.uname + " leaves")
                     rid = user.roomID
+                    print(user.uname + " leaves at room " + str(rid))
                     room = self.room_list[rid]
                     room.user_list.remove(user)
                     self.user_list.remove(user)
@@ -130,6 +130,7 @@ class Server:
                 room = self.room_list[rid]
                 if len(room.user_list) < room.max_unum:
                     user.ustatus = "ROOM"
+                    user.roomID = rid
                     room.user_list.append(user)
                     room.user_status.append("UNREADY")
                     print("Go to room: " + str(rid))
