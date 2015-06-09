@@ -3,15 +3,16 @@ import random
 
 class Game:
 
-    def __init__(self, player_num=0, hint=None, fail=None, num_card_left=0, players=[], garbage=[], hint_list=[], hanabi=[]):
-        self.player_num = player_num
-        self.hint = hint
-        self.fail = fail
+    def __init__(self, player_num=0, hint=None, fail=None, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
+        self.player_num     = player_num
+        self.hint           = hint
+        self.fail           = fail
         #self.players = players
-        self.players = [0 for x in range(self.player_num)]
-        self.hint_list = []
-        self.garbage = garbage
-        self.hanabi=[0, 0, 0, 0, 0]
+        self.hint_list      = []
+        self.garbage        = garbage
+        self.hanabi         = [0, 0, 0, 0, 0]
+        self.buf            = buf
+        self.players        = players_init(buf)
     
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
         if (self.hanabi[card_old[0]] == card_old[1] - 1):
@@ -32,7 +33,7 @@ class Game:
     def hint(self, sender, recver, hinttype, number, card_idx):
         res = Hint(sender, recver, hinttype, number, card_idx)
         self.hint_list.append(res)
-		self.hint -= 1
+        self.hint -= 1
 
     def show_garbage(self):
         print ('Garbage ', end='')
@@ -59,6 +60,18 @@ class Game:
             print ('>>> player %d ' % i, end='')
             self.players[i].debug()
 
+    def players_init(self, buf):
+        self.players = ['None'] * self.player_num
+        # handle serve result
+        for i in range(self.player_num):
+            print("player" + str(i) + ": ")
+            card_list = []
+            for j in range(4):
+                card = (int(buf[2+8*i+2*j+1]), int(buf[2+8*i+2*j+2]))
+                card_list.append(card)
+                print("  (" + str(buf[2+8*i+2*j+1]) + ", " + str(buf[2+8*i+2*j+2]) + ")")
+            self.players[i] = Game_player(cards=card_list)
+
 
 class Game_player:
 
@@ -70,6 +83,7 @@ class Game_player:
     
     def debug(self):
         print (str(self.cards))
+
 
 
 class Hint:
