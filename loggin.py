@@ -1,48 +1,34 @@
-#!/usr/bin/python
-
-# -*- coding: utf-8 -*-
-
-import pygame as pg
+import pygame
 from pygame.locals import *
-
-import inputbox
 
 
 def main():
 
-    # 初始化 pygame
-    pg.init()
+    # initialize game
+    pygame.init()
 
-    # 設定 pygame 視窗標題 (caption)
-    pg.display.set_caption("Demo")
+    # set up screen size and caption
+    pygame.display.set_caption("Hanabi")
+    screen_size = [640, 480]
+    screen = pygame.display.set_mode(screen_size)
 
-    # 設定 pygame 視窗大小 (640 x 480)
-    screen = pg.display.set_mode((640, 480))
+    black = (0, 0, 0)
+    white = (255, 255, 255)
 
-    # 將 pygame 視窗顯示在螢幕上
-    pg.display.flip()
+    # display the loggin page
+    pygame.display.flip()
 
-    f = open("client_list.txt", "w")
-    # 無窮迴圈
-    while True:
-        # 取得 pygame 的事件 (event)
-        event = pg.event.wait()
+    # loop until the close button is clicked
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            # the close button is clicked -> end the game
+            if event.type == pygame.QUIT:
+                done = True
+            elif event.type == pygame.MOUSEMOTION:
 
-        # 如果視窗的 x 被按下，就結束迴圈
-        if event.type == pg.QUIT:
-            break
-
-        # Testing with inputbox.ask
-        username = inputbox.ask(screen, "Enter username")
-        password = inputbox.ask(screen, "Enter password")
-        # print("(username, password) = (%s, %s)" % (username, password))
-        new_client = username + ", " + password + "\n"
-        f.write(new_client)
-
-    f.close()
-
-    # 釋放 pygame 的資源
-    pg.quit()
+    # close the window and release the resource
+    pygame.quit()
 
 
 if __name__ == '__main__':
