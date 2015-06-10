@@ -120,7 +120,7 @@ class Judge:
                 ncard   = self.cardID_to_card(ncardID)
                 ncolor  = ncard[0]
                 nnumber = ncard[1]
-                self.jgame.hit(cpidx, cidx, self.jgame.players[cpidx].cards, ncard)
+                self.jgame.hit(cpidx, cidx, self.jgame.players[cpidx].cards[cidx], ncard)
                 info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)
                 print("Player" + str(cpidx) + " hits card: " + str(cidx))
 
