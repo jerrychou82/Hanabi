@@ -51,9 +51,10 @@ class Game:
         print ('')
 
     def show_status(self):
-        print ('Hint %d Fail %d' % (self.hint, self.fail))
+        print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint, self.fail))
         self.show_garbage()
         self.show_hanabi()
+		self.show_hint_list()
     
     def show_debug(self):
         for i in range(4):
