@@ -121,35 +121,35 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                             print("  Send: " + info)
                             jsock.send(info.encode('UTF-8'))
                             break
-                        else
+                        else:
                             print("Wrong input format: [hit, hint, throw]")
                 elif msg_list[0] == "hit":
                     print ('hit TODO...')
-					print ('recv from server ' + msg)
-					G.hit(player=int(msg_list[1]), cardidx=int(msg_list[2]), \
-							card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
+                    print ('recv from server ' + msg)
+                    G.hit(player=int(msg_list[1]), cardidx=int(msg_list[2]), \
+                            card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
 
                 elif msg_list[0] == "hint":
                     print ('hint TODO...')
-					print ('recv from server ' + msg)
-					res = []
-					for i in range(int(msg_list[5])):
-						res.append(int(msg_list[6 + i]))
-					G.hint(sender=int(msg_list[1]), recver=int(msg_list[2]), \
-							hinttype=int(msg_list[3]), number=int(msg_list[4]), res):
+                    print ('recv from server ' + msg)
+                    res = []
+                    for i in range(int(msg_list[5])):
+                        res.append(int(msg_list[6 + i]))
+                    G.hint(sender=int(msg_list[1]), recver=int(msg_list[2]), \
+                            hinttype=int(msg_list[3]), number=int(msg_list[4]), card_idx=res)
                 elif msg_list[0] == "throw":
                     print ('throw TODO...')
-					print ('recv from server ' + msg)
-					G.throw(player=int(msg_list[1]), cardidx=int(msg_list[2]), card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
+                    print ('recv from server ' + msg)
+                    G.throw(player=int(msg_list[1]), cardidx=int(msg_list[2]), card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
                 elif msg_list[0] == "endgame":
                     print ('endgame TODO...')
                 else:
                     print ('recv nani?')
-					
-				print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
-				G.show_status()
-				G.show_debug()
-				print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
+                    
+                print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
+                G.show_status()
+                G.show_debug()
+                print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
