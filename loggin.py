@@ -25,7 +25,8 @@ def main():
             # the close button is clicked -> end the game
             if event.type == pygame.QUIT:
                 done = True
-            elif event.type == pygame.MOUSEMOTION:
+            # elif event.type == pygame.MOUSEMOTION:
+            #     print(event.pos)
 
     # close the window and release the resource
     pygame.quit()

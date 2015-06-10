@@ -50,7 +50,7 @@ def ask(screen, message):
 
 def main():
     screen = pygame.display.set_mode((320, 240))
-    print(ask(screen, "Name"))
+    print(ask(screen, "name ?"))
 
 
 if __name__ == '__main__':
