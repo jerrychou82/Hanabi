@@ -15,6 +15,8 @@ class Game:
         self.players_init(buf)
     
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
+        print ('card_old ' + str(card_old))
+        print ('card_new ' + str(card_new))
         if (self.hanabi[card_old[0]] == card_old[1] - 1):
             self.hanabi[card_old[0]] = card_old[1]
         else:
