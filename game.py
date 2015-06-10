@@ -12,7 +12,7 @@ class Game:
         self.garbage        = garbage
         self.hanabi         = [0, 0, 0, 0, 0]
         self.buf            = buf
-        self.players        = self.players_init(buf)
+        self.players_init(buf)
     
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
         if (self.hanabi[card_old[0]] == card_old[1] - 1):
@@ -59,7 +59,7 @@ class Game:
         self.show_hint_list()
     
     def show_debug(self):
-        for i in range(4):
+        for i in range(self.player_num):
             print ('>>> player %d ' % i, end='')
             self.players[i].debug()
 
@@ -81,6 +81,7 @@ class Game:
 class Game_player:
 
     def __init__(self, cards=[]):  # cards is a list of tuple(color_idx, number)
+        print(cards)
         self.cards = cards
     
     def update_card(self, cardidx, card):

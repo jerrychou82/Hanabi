@@ -2,8 +2,10 @@ import os
 import time
 import socket
 import select
-from random import shuffle
 import math
+import game
+from random import shuffle
+
 
 class Judge:
 
@@ -87,13 +89,20 @@ class Judge:
             print("  Send startgame to: " + str(self.IP_list[i]))
         print("After shuffle and serving!")
 
+        # Create game object
+        info = "startgame -1 " + str(self.conn_num) + serve_msg[self.conn_num]
+        self.jgame = game.Game(player_num=self.conn_num, buf=info)
+
 
     def game_start(self):
         
         print("Start game!")
 
         while self.cur_card_index != 50: # while there are still cards
-            
+           
+            print("Round: " + str(self.cur_card_index))
+            self.jgame.show_debug()
+
             # send yourturn to player
             cpidx = self.cur_player_index # current player index
             self.csock_list[cpidx].send("yourturn".encode('UTF-8'))
@@ -103,10 +112,13 @@ class Judge:
 
             if   msg_list[0] == "hit":
                 cidx    = int(msg_list[1]) # card index
-                ccolor  = 0
-                cnumber = 0
-                ncolor  = 0
-                nnumber = 0
+                ccolor  = self.jgame.players[cpidx].cards[cidx][0]
+                cnumber = self.jgame.players[cpidx].cards[cidx][1]
+                ncardID = self.draw_card()
+                ncard   = self.cardID_to_card(ncardID)
+                ncolor  = ncard[0]
+                nnumber = ncard[1]
+                self.jgame.players[cpidx].update_card(cidx, ncard)
                 info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
                            + " " + str(ncolor) + " " + str(nnumber)
                 print("Player" + str(cpidx) + " hits card: " + str(cidx))
@@ -127,8 +139,10 @@ class Judge:
                 cidx    = int(msg_list[1]) # card index
                 ccolor  = 0
                 cnumber = 0
-                ncolor  = 0
-                nnumber = 0
+                ncardID = self.draw_card()
+                ncard   = self.cardID_to_card(ncardID)
+                ncolor  = ncard[0]
+                nnumber = ncard[1]
                 info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
                            + " " + str(ncolor) + " " + str(nnumber)
                 print("Player" + str(cpidx) + " throws")
@@ -136,7 +150,7 @@ class Judge:
             # send info to everyone
             for s in self.csock_list:
                 s.send(info.encode('UTF-8'))
-                print("  Info: " + info)
+            print("  Info: " + info)
 
             # update next player
             self.cur_player_index = (cpidx + 1) % self.conn_num
@@ -151,7 +165,7 @@ class Judge:
         shuffle(self.desk)
 
         # serve cards
-        msg = [""] * self.conn_num
+        msg = [""] * (self.conn_num+1)
         for playeridx in range(self.conn_num):
             for i in range(4):
                 cardID = self.desk[self.cur_card_index]
@@ -162,8 +176,14 @@ class Judge:
                         msg[j] += " " + "-1" + " " + "-1"
                     else:
                         msg[j] += " " + str(card[0]) + " " + str(card[1])
+                msg[self.conn_num] += " " + str(card[0]) + " " + str(card[1])
 
         return msg
+
+    def draw_card(self):
+        cardID = self.desk[self.cur_card_index]
+        self.cur_card_index += 1
+        return cardID
 
     def cardID_to_card(self, cardID):
         card_color = 1 + (cardID // 10)
