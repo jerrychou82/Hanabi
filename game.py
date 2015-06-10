@@ -50,10 +50,9 @@ class Game:
         print ('Hanabi ' + str(self.hanabi))
     
     def show_hint_list(self):
-        print ('Hint_list ', end='')
+        print ('Hint_list:')
         for i in range(len(self.hint_list)):
             self.hint_list[i].show_hint()
-        print ('')
 
     def show_status(self):
         print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint_num, self.fail_num))
