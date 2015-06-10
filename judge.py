@@ -97,6 +97,7 @@ class Judge:
     def game_start(self):
         
         print("Start game!")
+        time.sleep(1)
 
         while self.cur_card_index != 50: # while there are still cards
            
@@ -120,8 +121,7 @@ class Judge:
                 ncolor  = ncard[0]
                 nnumber = ncard[1]
                 self.jgame.hit(cpidx, cidx, self.jgame.players[cpidx].cards, ncard)
-                info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
-                           + " " + str(ncolor) + " " + str(nnumber)
+                info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)
                 print("Player" + str(cpidx) + " hits card: " + str(cidx))
 
             elif msg_list[0] == "hint":
@@ -132,7 +132,9 @@ class Judge:
                 hclist  = self.find_hint_card(hpidx, htype, hnum)
                 hcnum   = len(hclist)       # number of cards that are hint
                 self.jgame.hint(cpidx, hpidx, htype, hnum, hclist)
-                info    = "hint " + str(cpidx) + " " + str(hpidx) + " " + str(htype) + " " + str(hnum)
+                info    = "hint " + str(cpidx) + " " + str(hpidx) + " " + str(htype) + " " + str(hnum) + " " + str(hcnum)
+                for card in hclist:
+                    info += " " + str(card)
                 print("Player" + str(cpidx) + " hints player " + str(hpidx) + " on ", end="")
                 if htype == "color":
                     print("color " + str(hnum))
@@ -148,13 +150,22 @@ class Judge:
                 ncard   = self.cardID_to_card(ncardID)
                 ncolor  = ncard[0]
                 nnumber = ncard[1]
-                info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
-                           + " " + str(ncolor) + " " + str(nnumber)
+                info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)
                 print("Player" + str(cpidx) + " throws")
 
             # send info to everyone
-            for s in self.csock_list:
-                s.send(info.encode('UTF-8'))
+            if msg_list[0] == "hit" or msg_list[0] == "throw":
+                for s in self.csock_list:
+                    if s == self.csock_list[cpidx]:
+                        sinfo = info + " -1 -1"
+                    else:
+                        sinfo = info + " " + str(ncolor) + " " + str(nnumber)
+
+                    s.send(sinfo.encode('UTF-8'))
+            else:
+                for s in self.csock_list:
+                    s.send(info.encode('UTF-8'))
+
             print("  Info: " + info)
 
             # update next player
