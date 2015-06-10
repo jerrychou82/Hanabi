@@ -103,12 +103,19 @@ class Judge:
 
             if   msg_list[0] == "hit":
                 cidx    = int(msg_list[1]) # card index
+                ccolor  = 0
+                cnumber = 0
+                ncolor  = 0
+                nnumber = 0
+                info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
+                           + " " + str(ncolor) + " " + str(nnumber)
                 print("Player" + str(cpidx) + " hits card: " + str(cidx))
 
             elif msg_list[0] == "hint":
                 hpidx   = int(msg_list[1]) # hint player index
                 htype   = int(msg_list[2]) # hint type: 0: color; 1: number
                 hnum    = int(msg_list[3]) # hint number
+                info    = "hint " + str(cpidx) + " " + str(hpidx) + " " + str(htype) + " " + str(hnum)
                 print("Player" + str(cpidx) + " hints player " + str(hpidx) + " on ", end="")
                 if htype == "color":
                     print("color " + str(hnum))
@@ -118,7 +125,18 @@ class Judge:
 
             elif msg_list[0] == "throw":
                 cidx    = int(msg_list[1]) # card index
+                ccolor  = 0
+                cnumber = 0
+                ncolor  = 0
+                nnumber = 0
+                info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
+                           + " " + str(ncolor) + " " + str(nnumber)
                 print("Player" + str(cpidx) + " throws")
+
+            # send info to everyone
+            for s in self.csock_list:
+                s.send(info.encode('UTF-8'))
+                print("  Info: " + info)
 
             # update next player
             self.cur_player_index = (cpidx + 1) % self.conn_num
