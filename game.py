@@ -43,7 +43,7 @@ class Game:
     def show_garbage(self):
         print ('Garbage ', end='')
         for i in range(len(self.garbage)):
-            print (garbage[i], end='')
+            print (self.garbage[i], end='')
         print ('')
 
     def show_hanabi(self):
