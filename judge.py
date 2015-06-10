@@ -102,6 +102,7 @@ class Judge:
            
             print("Round: " + str(self.cur_card_index))
             self.jgame.show_debug()
+            self.jgame.show_status()
 
             # send yourturn to player
             cpidx = self.cur_player_index # current player index
@@ -118,15 +119,19 @@ class Judge:
                 ncard   = self.cardID_to_card(ncardID)
                 ncolor  = ncard[0]
                 nnumber = ncard[1]
-                self.jgame.players[cpidx].update_card(cidx, ncard)
+                self.jgame.hit(cpidx, cidx, self.jgame.players[cpidx].cards, ncard)
                 info    = "hit " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)\
                            + " " + str(ncolor) + " " + str(nnumber)
                 print("Player" + str(cpidx) + " hits card: " + str(cidx))
 
             elif msg_list[0] == "hint":
-                hpidx   = int(msg_list[1]) # hint player index
-                htype   = int(msg_list[2]) # hint type: 0: color; 1: number
-                hnum    = int(msg_list[3]) # hint number
+                hpidx   = int(msg_list[1])  # hint player index
+                htype   = int(msg_list[2])  # hint type: 0: color; 1: number
+                hnum    = int(msg_list[3])  # hint number
+                # find cards that are hint
+                hclist  = self.find_hint_card(hpidx, htype, hnum)
+                hcnum   = len(hclist)       # number of cards that are hint
+                self.jgame.hint(cpidx, hpidx, htype, hnum, hclist)
                 info    = "hint " + str(cpidx) + " " + str(hpidx) + " " + str(htype) + " " + str(hnum)
                 print("Player" + str(cpidx) + " hints player " + str(hpidx) + " on ", end="")
                 if htype == "color":
@@ -199,4 +204,11 @@ class Judge:
         else:
             card_num = 5
         return (card_color, card_num)
+
+    def find_hint_card(self, cpidx, htype, hnum):
+        hlist = []
+        for i in range(4):
+            if self.jgame.players[cpidx].cards[i][htype] == hnum:
+                hlist.append(i)
+        return hlist
 

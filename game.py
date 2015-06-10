@@ -5,8 +5,8 @@ class Game:
 
     def __init__(self, player_num=0, hint=8, fail=0, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
         self.player_num     = player_num
-        self.hint           = hint
-        self.fail           = fail
+        self.hint_num       = hint
+        self.fail_num       = fail
         self.num_card_left  = 50 - player_num * 4
         self.hint_list      = []
         self.garbage        = garbage
@@ -19,24 +19,24 @@ class Game:
             self.hanabi[card_old[0]] = card_old[1]
         else:
             self.garbage.append(card_old)
-            self.fail -= 1
-            if (self.fail == 0):
+            self.fail_num -= 1
+            if (self.fail_num == 0):
                 #TODO
-				print ('fail == 0...QQ')
+                print ('fail == 0...QQ')
                 print ('TODO...')
         self.players[player].update_card(cardidx, card_new)
         self.num_card_left -= 1
 
     def throw(self, player, cardidx, card_old, card_new):
         self.garbage.append(card_old) 
-        self.hint += 1
+        self.hint_num += 1
         self.players[player].update_card(cardidx, card_new)
         self.num_card_left -= 1
 
     def hint(self, sender, recver, hinttype, number, card_idx):
         res = Hint(sender, recver, hinttype, number, card_idx)
         self.hint_list.append(res)
-        self.hint -= 1
+        self.hint_num -= 1
 
     def show_garbage(self):
         print ('Garbage ', end='')
@@ -45,16 +45,16 @@ class Game:
         print ('')
 
     def show_hanabi(self):
-        print ('Hanabi ' + str(hanabi))
+        print ('Hanabi ' + str(self.hanabi))
     
     def show_hint_list(self):
         print ('Hint_list ', end='')
         for i in range(len(self.hint_list)):
-            print (str(hint_list), end='')
+            self.hint_list[i].show_hint()
         print ('')
 
     def show_status(self):
-        print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint, self.fail))
+        print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint_num, self.fail_num))
         self.show_garbage()
         self.show_hanabi()
         self.show_hint_list()
