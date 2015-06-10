@@ -109,16 +109,16 @@ class Judge:
                 hpidx   = int(msg_list[1]) # hint player index
                 htype   = int(msg_list[2]) # hint type: 0: color; 1: number
                 hnum    = int(msg_list[3]) # hint number
-                print("Player" + str(cpidx) + "hints player " + str(hpidx) + " on ", end="")
+                print("Player" + str(cpidx) + " hints player " + str(hpidx) + " on ", end="")
                 if htype == "color":
                     print("color " + str(hnum))
                 else:
                     print("number " + str(hnum))
 
 
-            elif msg_list[0] == "throws":
+            elif msg_list[0] == "throw":
                 cidx    = int(msg_list[1]) # card index
-                print("Player" + str(cpidx) + "throws")
+                print("Player" + str(cpidx) + " throws")
 
             # update next player
             self.cur_player_index = (cpidx + 1) % self.conn_num

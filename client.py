@@ -92,8 +92,36 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
 
                 if msg_list[0] == "yourturn":
                     # jsock.send("hit 1".encode('UTF-8'))
-                    jsock.send("hint 1 0 4".encode('UTF-8'))
-                    # jsock.send("throw 2".encode('UTF-8'))
+                    data = input("Your turn: ")
+                    cmd_list = data.split(' ')
+                    while (True):
+                        
+                        if cmd_list[0] == "hit" and len(cmd_list) == 2:
+                            cardidx = int(cmd_list[1])
+                            info = "hit " + str(cardidx)
+                            print("  Send:" + info)
+                            jsock.send(info.encode('UTF-8'))
+                            break
+                        
+                        elif cmd_list[0] == "hint" and len(cmd_list) == 4:
+                            hplayer = int(cmd_list[1])
+                            htype   = int(cmd_list[2])
+                            hnumber = int(cmd_list[3])
+                            info = "hint " + str(hplayer) + " " + str(htype) + " " + str(hnumber)
+                            print("  Send: " + info)
+                            jsock.send(info.encode('UTF-8'))
+                            break
+                        
+                        elif cmd_list[0] == "throw" and len(cmd_list) == 2:
+                            cardidx = int(cmd_list[1])
+                            info = "throw " + str(cardidx)
+                            print("  Send: " + info)
+                            jsock.send(info.encode('UTF-8'))
+                            break
+
+                        print("Wrong input format: [hit, hint, throw]")
+
+                
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
