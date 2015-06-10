@@ -22,14 +22,15 @@ class Game:
             self.fail -= 1
             if (self.fail == 0):
                 #TODO
+				print ('fail == 0...QQ')
                 print ('TODO...')
-        self.players.update_card(cardidx, card_new)
+        self.players[player].update_card(cardidx, card_new)
         self.num_card_left -= 1
 
     def throw(self, player, cardidx, card_old, card_new):
         self.garbage.append(card_old) 
         self.hint += 1
-        self.players.update_card(cardidx, card_new)
+        self.players[player].update_card(cardidx, card_new)
         self.num_card_left -= 1
 
     def hint(self, sender, recver, hinttype, number, card_idx):
