@@ -3,20 +3,20 @@ import random
 
 class Game:
 
-    def __init__(self, player_num=0, hint=None, fail=None, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
+    def __init__(self, player_num=0, hint=8, fail=0, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
         self.player_num     = player_num
         self.hint           = hint
         self.fail           = fail
-        #self.players = players
+        self.num_card_left  = 50 - player_num * 4
         self.hint_list      = []
         self.garbage        = garbage
         self.hanabi         = [0, 0, 0, 0, 0]
         self.buf            = buf
-        self.players        = players_init(buf)
+        self.players        = self.players_init(buf)
     
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
         if (self.hanabi[card_old[0]] == card_old[1] - 1):
-            self.hanabi[card_old[0]] = card_old[[1]
+            self.hanabi[card_old[0]] = card_old[1]
         else:
             self.garbage.append(card_old)
             self.fail -= 1
@@ -24,11 +24,13 @@ class Game:
                 #TODO
                 print ('TODO...')
         self.players.update_card(cardidx, card_new)
+        self.num_card_left -= 1
 
     def throw(self, player, cardidx, card_old, card_new):
-           self.garbage.append(card_old) 
+        self.garbage.append(card_old) 
         self.hint += 1
         self.players.update_card(cardidx, card_new)
+        self.num_card_left -= 1
 
     def hint(self, sender, recver, hinttype, number, card_idx):
         res = Hint(sender, recver, hinttype, number, card_idx)
@@ -54,15 +56,17 @@ class Game:
         print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint, self.fail))
         self.show_garbage()
         self.show_hanabi()
-		self.show_hint_list()
+        self.show_hint_list()
     
     def show_debug(self):
         for i in range(4):
             print ('>>> player %d ' % i, end='')
             self.players[i].debug()
 
-    def players_init(self, buf):
+    def players_init(self, buff):
+        print ('buf ->>>>>>> %s.' % buff)
         self.players = ['None'] * self.player_num
+        buf = buff.split(' ')
         # handle serve result
         for i in range(self.player_num):
             print("player" + str(i) + ": ")
@@ -100,7 +104,7 @@ class Hint:
         mtype = 'undefined'
         if (self.hinttype == 0):
             mtype = 'color'
-        else
+        else:
             mtype = 'number'
         print ('[history] \'' + str(self.sender) + '\' hints \'' + str(self.recver) + \
                '\' type \'' + mtype + ' ' + str(self.number) + '\' card ' + str(self.card_idx))
