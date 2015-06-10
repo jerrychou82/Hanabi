@@ -17,8 +17,8 @@ class Game:
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
         print ('card_old ' + str(card_old))
         print ('card_new ' + str(card_new))
-        if (self.hanabi[card_old[0]] == card_old[1] - 1):
-            self.hanabi[card_old[0]] = card_old[1]
+        if (self.hanabi[card_old[0] - 1] == card_old[1] - 1):
+            self.hanabi[card_old[0] - 1] = card_old[1]
         else:
             self.garbage.append(card_old)
             self.fail_num -= 1
