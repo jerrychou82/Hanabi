@@ -4,6 +4,7 @@ import sys
 import time
 
 from game_control import *
+import game
 
 '''
 usage: python3 client.py [host] [port]
@@ -43,6 +44,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     gameID = -1
     game_player_num = -1
 
+
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
         (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
@@ -64,6 +66,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                 print ('[judge ' + str(rID) + '] recv from jsock \'' + data.decode('UTF-8') + '\'')
                 time.sleep(2)
                 buff = data.decode('UTF-8')
+                game_init = buff
                 buf = buff.split(" ")
                 if (buf[0] == 'startgame'): # stargame and serve result
                     ok = True
@@ -78,6 +81,9 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     break
         if (ok == True):
             break
+    
+    print ('Now initial Game class...')
+    G = game.Game(player_num=game_player_num, buf=buff)
 
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
@@ -123,11 +129,13 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                         print("Wrong input format: [hit, hint, throw]")
                 
                 elif msg_list[0] == "hit":
-                    print("")
+                    print ('hit TODO...')
                 elif msg_list[0] == "hint":
-                    print()
+                    print ('hint TODO...')
                 elif msg_list[0] == "throw":
-                    print
+                    print ('throw TODO...')
+                elif msg_list[0] == "endgame":
+                    print ('endgame TODO...')
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
