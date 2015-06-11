@@ -5,6 +5,7 @@ import time
 
 from game_control import *
 import game
+from screen_figure import handle_event
 
 '''
 usage: python3 client.py [host] [port]
@@ -229,10 +230,24 @@ def main():
     
     byebye = False
 
+
+    # screen init
+    pygame.init()
+    pygame.display.set_caption("Hanabi")
+    screen_size = [640, 480]
+    screen = pygame.display.set_mode(screen_size)
+    done = False
+    which_screen = 0    # 0: home; 1: register; 2: loggin; 3: lobby
+
+
     while (True):
         print ('Now in lobby!')
         print ('before select')
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
+        
+        # get event
+        event_list = pygame.event.get()
+        handle_event(event_list)
 
         for i in inputready:
             if (i == 0):  # select from stdin

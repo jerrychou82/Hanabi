@@ -173,6 +173,9 @@ class Judge:
             
             self.cur_card_index += 1
 
+        # end of game
+
+
 
     # shuffle the desk and return the serving result
     def shuffle_and_serve(self):
