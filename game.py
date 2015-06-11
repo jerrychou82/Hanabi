@@ -31,7 +31,7 @@ class Game:
 
     def throw(self, player, cardidx, card_old, card_new):
         self.garbage.append(card_old) 
-        if (self.hint < 8):
+        if (self.hint_num < 8):
             self.hint_num += 1
         self.players[player].update_card(cardidx, card_new)
         self.num_card_left -= 1
