@@ -3,6 +3,8 @@ import select
 import sys
 import time
 
+import pygame
+
 from game_control import *
 import game
 from screen_figure import handle_event
@@ -214,7 +216,22 @@ def main():
         if (msg == 'ACK'):
             break
 
-    nickname = input('Please enter nickname: ')
+    # screen init
+    pygame.init()
+    pygame.display.set_caption("Hanabi")
+    screen_size = [640, 480]
+    screen = pygame.display.set_mode(screen_size)
+    which_screen = 0    # 0: home; 1: register; 2: loggin; 3: lobby
+    done = False
+    while not done and which_screen != 3:
+        event_list = pygame.event.get()
+        (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
+        if len(msg) != 0:
+            nickname = msg
+
+    print(nickname)
+
+    # nickname = input('Please enter nickname: ')
     print ('sending nickname to server...')
     msg = 'login ' + nickname
     ssock.send(msg.encode('UTF-8'))
@@ -229,27 +246,21 @@ def main():
             break
     
     byebye = False
-
-
-    # screen init
-    pygame.init()
-    pygame.display.set_caption("Hanabi")
-    screen_size = [640, 480]
-    screen = pygame.display.set_mode(screen_size)
-    done = False
-    which_screen = 0    # 0: home; 1: register; 2: loggin; 3: lobby
-
+    fflag = 1
+    print ('Now in lobby!')
 
     while (True):
-        print ('Now in lobby!')
-        print ('before select')
-        (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
+        if fflag == 1:
+            print ('before select')
+            fflag = 0
+        (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [], 1)
         
         # get event
         event_list = pygame.event.get()
-        handle_event(event_list)
+        (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
 
         for i in inputready:
+            fflag = 1
             if (i == 0):  # select from stdin
                 #TODO
                 buff = input()
