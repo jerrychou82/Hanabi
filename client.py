@@ -3,11 +3,11 @@ import select
 import sys
 import time
 
-import pygame
+# import pygame
 
 from game_control import *
 import game
-from screen_figure import handle_event
+# from screen_figure import handle_event
 
 '''
 usage: python3 client.py [host] [port]
@@ -16,6 +16,8 @@ usage: python3 client.py [host] [port]
 user_list = []
 room_list = []
 ssock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+pygameflag = 0
 
 def is_number(s):
     try:
@@ -216,22 +218,23 @@ def main():
         if (msg == 'ACK'):
             break
 
-    # screen init
-    pygame.init()
-    pygame.display.set_caption("Hanabi")
-    screen_size = [640, 480]
-    screen = pygame.display.set_mode(screen_size)
-    which_screen = 0    # 0: home; 1: register; 2: loggin; 3: lobby
-    done = False
-    while not done and which_screen != 3:
-        event_list = pygame.event.get()
-        (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
-        if len(msg) != 0:
-            nickname = msg
-
-    print(nickname)
-
-    # nickname = input('Please enter nickname: ')
+    if pygameflag == 1:
+        # screen init
+        pygame.init()
+        pygame.display.set_caption("Hanabi")
+        screen_size = [640, 480]
+        screen = pygame.display.set_mode(screen_size)
+        which_screen = 0    # 0: home; 1: register; 2: loggin; 3: lobby
+        done = False
+        while not done and which_screen != 3:
+            event_list = pygame.event.get()
+            (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
+            if len(msg) != 0:
+                nickname = msg
+        print(nickname)
+    else:
+        nickname = input('Please enter nickname: ')
+    
     print ('sending nickname to server...')
     msg = 'login ' + nickname
     ssock.send(msg.encode('UTF-8'))
@@ -255,9 +258,10 @@ def main():
             fflag = 0
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [], 1)
         
-        # get event
-        event_list = pygame.event.get()
-        (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
+        if pygameflag == 1:
+            # get event
+            event_list = pygame.event.get()
+            (which_screen, done, msg) = handle_event(event_list, screen, which_screen, done)
 
         for i in inputready:
             fflag = 1
