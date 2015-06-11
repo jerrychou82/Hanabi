@@ -107,6 +107,7 @@ class Judge:
 
             # send yourturn to player
             cpidx = self.cur_player_index # current player index
+
             self.csock_list[cpidx].send("yourturn".encode('UTF-8'))
             data = self.csock_list[cpidx].recv(4096)
             msg = data.decode('UTF-8')
@@ -169,10 +170,13 @@ class Judge:
 
             print("  Info: " + info)
 
+            # wait clients ACK
+            for s in self.csock_list:
+                msg = s.recv(4096)
+            
+
             # update next player
             self.cur_player_index = (cpidx + 1) % self.conn_num
-            
-            self.cur_card_index += 1
 
         # end of game
 
