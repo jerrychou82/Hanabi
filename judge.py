@@ -144,12 +144,13 @@ class Judge:
 
             elif msg_list[0] == "throw":
                 cidx    = int(msg_list[1]) # card index
-                ccolor  = 0
-                cnumber = 0
+                ccolor  = self.jgame.players[cpidx].cards[cidx][0]
+                cnumber = self.jgame.players[cpidx].cards[cidx][1]
                 ncardID = self.draw_card()
                 ncard   = self.cardID_to_card(ncardID)
                 ncolor  = ncard[0]
                 nnumber = ncard[1]
+                self.jgame.throw(cpidx, cidx, self.jgame.players[cpidx].cards[cidx], ncard)
                 info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)
                 print("Player" + str(cpidx) + " throws")
 
