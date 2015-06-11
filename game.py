@@ -21,8 +21,8 @@ class Game:
             self.hanabi[card_old[0] - 1] = card_old[1]
         else:
             self.garbage.append(card_old)
-            self.fail_num -= 1
-            if (self.fail_num == 0):
+            self.fail_num += 1
+            if (self.fail_num == 3):
                 #TODO
                 print ('fail == 0...QQ')
                 print ('TODO...')
