@@ -150,6 +150,10 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     print ('endgame TODO...')
                 else:
                     print ('recv nani?')
+
+                if (msg_list[0] == "hit" or msg_list[0] == "hint" or msg_list[0] == "throw"):
+                    ttt = 'action ACK'
+                    jsock.send(ttt.encode('UTF-8'))
                     
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
                 G.show_status()
