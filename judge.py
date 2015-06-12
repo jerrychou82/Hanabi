@@ -102,7 +102,6 @@ class Judge:
         while self.cur_card_index != 50: # while there are still cards
            
             print("Round: " + str(self.cur_card_index))
-            self.jgame.show_debug()
             self.jgame.show_status()
 
             # send yourturn to player
@@ -179,7 +178,7 @@ class Judge:
             self.cur_player_index = (cpidx + 1) % self.conn_num
 
         # end of game
-
+        print("End of game")
 
 
     # shuffle the desk and return the serving result

@@ -1,7 +1,32 @@
 import random
-
+import os
 
 class Game:
+
+    @staticmethod
+    def print_cards(cards):
+        print()
+        if len(cards) == 0:
+            return
+        print_msg = [""] * 5
+        for card in cards:
+            msg = Game.print_card(card)
+            for i in range(5):
+                print_msg[i] += msg[i]
+        for i in range(5):
+            print(print_msg[i])
+        
+    @staticmethod
+    def print_card(card):
+        msg = []
+        msg.append(" ----- ")
+        msg.append(" |   | ")
+        msg.append(" | \x1b[1;%dm" % (30 + card[0])  + (str(card[1]) if card[1] != -1 else "?") \
+                    + "\x1b[0m | ")
+        msg.append(" |   | ")
+        msg.append(" ----- ")
+        return msg
+
 
     def __init__(self, player_num=0, hint=8, fail=0, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
         self.player_num     = player_num
@@ -43,9 +68,10 @@ class Game:
 
     def show_garbage(self):
         print ('Garbage ', end='')
-        for i in range(len(self.garbage)):
-            print (self.garbage[i], end='')
-        print ('')
+        # for i in range(len(self.garbage)):
+            # print (self.garbage[i], end='')
+        Game.print_cards(self.garbage)
+        print ()
 
     def show_hanabi(self):
         print ('Hanabi ' + str(self.hanabi))
@@ -56,12 +82,11 @@ class Game:
             self.hint_list[i].show_hint()
 
     def show_status(self):
+        os.system('clear')
         print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint_num, self.fail_num))
         self.show_garbage()
         self.show_hanabi()
         self.show_hint_list()
-    
-    def show_debug(self):
         for i in range(self.player_num):
             print ('>>> player %d ' % i, end='')
             self.players[i].debug()
@@ -91,8 +116,8 @@ class Game_player:
         self.cards[cardidx] = card
     
     def debug(self):
-        print (str(self.cards))
-
+        # print (str(self.cards))
+        Game.print_cards(self.cards)
 
 
 class Hint:

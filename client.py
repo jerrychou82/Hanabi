@@ -78,10 +78,12 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     gameID = int(buf[1])
                     game_player_num = int(buf[2])
                     # handle serve result
+                    '''
                     for i in range(game_player_num):
                         print("player" + str(i) + ": ")
                         for j in range(4):
                             print("  (" + str(buf[2+8*i+2*j+1]) + ", " + str(buf[2+8*i+2*j+2]) + ")")
+                    '''
 
                     break
         if (ok == True):
@@ -89,6 +91,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     
     print ('Now initial Game class...')
     G = game.Game(player_num=game_player_num, buf=buff)
+    G.show_status()
 
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
@@ -157,7 +160,6 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
                 G.show_status()
-                G.show_debug()
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
 
 
