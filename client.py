@@ -171,6 +171,7 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
 
     while (True):
         print ('[room ' + str(rID) + '] waiting for user command...')
+
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
         for i in inputready:
             if i == 0:
@@ -267,7 +268,7 @@ def main():
             print ('before select')
             fflag = 0
         Lobby.print_lobby(user_list, room_list)
-        (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [], 1)
+        (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
         
         if pygameflag == 1:
             # get event
@@ -292,18 +293,18 @@ def main():
                     dump_roomlist(room_list)
 
                 elif (msg == 'croom'):
-                    print ('Now croom...')
+                    print ('Creating croom...')
                     if (len(buf) != 3 or is_number(buf[1]) == False or is_number(buf[2]) == False):
                         print ('wrong usage! croom [room_number] [max_number]')
                         continue
 
-                    print ('i will send \'' + buff + '\'')
+                    # print ('i will send \'' + buff + '\'')
                     time.sleep(2)
                     ssock.send(buff.encode('UTF-8'))  #TODO if this message lose
                     #TODO fork to room process?
                     while (True):
                         data = ssock.recv(4096)
-                        print ('what i recv is ' + data.decode('UTF-8'))
+                        # print ('what i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'croom ACK'):  #it will have port number later...
                             print ('croom success')
                             sRoom(hanabi_addr, ssock, int(buf[1]))
