@@ -66,7 +66,15 @@ class Server:
             print("Non matched")
             data = s.recv(4096)
             print(data)
-      
+     
+    # update everyone in the lobby
+    def lobby_update(self):
+        info = make_lobby_info(self.user_list, self.room_list)
+        info = "update " + info
+        for user in self.user_list:
+            user.usock.send(info.encode('UTF-8'))
+        
+
     # user message handle
     def user_msg_handle(self, s, user, msg):
         msg_list = msg.split(' ')
