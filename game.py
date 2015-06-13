@@ -8,23 +8,21 @@ class Game:
         print()
         if len(cards) == 0:
             return
-        print_msg = [""] * 5
+        print_msg = [""] * 3
         for card in cards:
             msg = Game.print_card(card)
-            for i in range(5):
+            for i in range(3):
                 print_msg[i] += msg[i]
-        for i in range(5):
+        for i in range(3):
             print(print_msg[i])
         
     @staticmethod
     def print_card(card):
         msg = []
-        msg.append(" ----- ")
-        msg.append(" |   | ")
+        msg.append(" +---+ ")
         msg.append(" | \x1b[1;%dm" % (30 + card[0])  + (str(card[1]) if card[1] != -1 else "?") \
                     + "\x1b[0m | ")
-        msg.append(" |   | ")
-        msg.append(" ----- ")
+        msg.append(" +---+ ")
         return msg
 
 

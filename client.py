@@ -4,10 +4,11 @@ import sys
 import time
 
 # import pygame
+# from screen_figure import handle_event
 
 from game_control import *
 import game
-# from screen_figure import handle_event
+from client_style import *
 
 '''
 usage: python3 client.py [host] [port]
@@ -239,7 +240,8 @@ def main():
                 nickname = msg
         print(nickname)
     else:
-        nickname = input('Please enter nickname: ')
+        nickname = Login.print_login()
+         
     
     print ('sending nickname to server...')
     msg = 'login ' + nickname
@@ -258,10 +260,13 @@ def main():
     fflag = 1
     print ('Now in lobby!')
 
+    user_list, room_list = update(ssock)
+
     while (True):
         if fflag == 1:
             print ('before select')
             fflag = 0
+        Lobby.print_lobby(user_list, room_list)
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [], 1)
         
         if pygameflag == 1:
@@ -283,41 +288,7 @@ def main():
                 msg = buf[0]
                 if (msg == 'update'):
                     print ('Now update...')
-                    update = 'update'
-                    ssock.send(update.encode('UTF-8'))
-                    data = ssock.recv(4096)
-                    print ('recv \'' + data.decode('UTF-8') + '\' from server')
-                    data2 = data.decode('UTF-8')  #will receive 'update #fro11o:CONN#...#%#123:4:0#...#'
-                    data3 = data2.split(' ')  #erase update
-
-                    user_list[:] = []
-                    room_list[:] = []
-                    res = data3[1].split('%')
-                    print (res)
-                    user = res[0].split('#')
-                    room = res[1].split('#')
-                    print (user)
-                    print (room)
-                    for u in user:
-                        if (u == ''):
-                            continue
-                        ui = u.split(':')    
-                        uu = Unode(uname=ui[0], ustatus=ui[1])
-                        user_list.append(uu)
-                    dump_userlist(user_list)
-                    for r in room:
-                        if (r == ''):
-                            continue
-                        ri = r.split(':')
-
-                        tmp = []
-                        for tt in ri:
-                            if (tt == ' '):
-                                continue
-                            tmp.append(int(tt))
-
-                        rr = Rnode(rID=tmp[0], max_unum=tmp[1], cur_unum=tmp[2])
-                        room_list.append(rr)
+                    user_list, room_list = update(ssock)
                     dump_roomlist(room_list)
 
                 elif (msg == 'croom'):
@@ -418,6 +389,43 @@ def main():
 
     ssock.close()
 
+def update(ssock):
+    update = 'update'
+    ssock.send(update.encode('UTF-8'))
+    data = ssock.recv(4096)
+    print ('recv \'' + data.decode('UTF-8') + '\' from server')
+    data2 = data.decode('UTF-8')  #will receive 'update #fro11o:CONN#...#%#123:4:0#...#'
+    data3 = data2.split(' ')  #erase update
+
+    user_list[:] = []
+    room_list[:] = []
+    res = data3[1].split('%')
+    print (res)
+    user = res[0].split('#')
+    room = res[1].split('#')
+    print (user)
+    print (room)
+    for u in user:
+        if (u == ''):
+            continue
+        ui = u.split(':')    
+        uu = Unode(uname=ui[0], ustatus=ui[1])
+        user_list.append(uu)
+    dump_userlist(user_list)
+    for r in room:
+        if (r == ''):
+            continue
+        ri = r.split(':')
+
+        tmp = []
+        for tt in ri:
+            if (tt == ' '):
+                continue
+            tmp.append(int(tt))
+
+        rr = Rnode(rID=tmp[0], max_unum=tmp[1], cur_unum=tmp[2])
+        room_list.append(rr)
+    return user_list, room_list
 
 if __name__ == '__main__':
     main()

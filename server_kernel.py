@@ -7,7 +7,7 @@ class Server:
         
     # maximum number of clients
     MAX_PLAYER  = 20
-    ROOM_NUM    = 20
+    ROOM_NUM    = 10
 
     def __init__(self, rqueue, port_num): 
     
