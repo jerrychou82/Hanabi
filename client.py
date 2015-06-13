@@ -155,8 +155,9 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     G.throw(player=int(msg_list[1]), cardidx=int(msg_list[2]), card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
                 elif msg_list[0] == "endgame":
                     print ('endgame TODO...')
-                    ttt = 'endgame ACK'
-                    jsock.send(ttt.encode('UTF-8'))
+                    #ttt = 'endgame ACK'
+                    #jsock.send(ttt.encode('UTF-8'))
+                    #time.sleep(0.5)
                     EndGame = True
                     break
                 else:
@@ -171,6 +172,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
         if (EndGame == True):
             break
+    jsock.close()
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
