@@ -95,9 +95,11 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     G = game.Game(player_num=game_player_num, buf=buff)
     G.show_status()
 
+
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
         (inputready, outputready, exceptrdy) = select.select([0, jsock], [], [])
+        EndGame = False
         for i in inputready:
             if i == 0:
                 print ('TODO...')
@@ -153,6 +155,10 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     G.throw(player=int(msg_list[1]), cardidx=int(msg_list[2]), card_old=(int(msg_list[3]), int(msg_list[4])), card_new=(int(msg_list[5]), int(msg_list[6])))
                 elif msg_list[0] == "endgame":
                     print ('endgame TODO...')
+                    ttt = 'endgame ACK'
+                    jsock.send(ttt.encode('UTF-8'))
+                    EndGame = True
+                    break
                 else:
                     print ('recv nani?')
 
@@ -163,12 +169,13 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
                 G.show_status()
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
+        if (EndGame == True):
+            break
 
 
 def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
     print ('[room ' + str(rID) + '] inside room XD')
 
-    leave = False
 
     # a tuple list to record the status in the room
     room_ready_list = []
@@ -180,6 +187,7 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
         print ('[room ' + str(rID) + '] waiting for user command...')
         Room_Style.print_room(rID, room_ready_list)
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
+        Leave = False
         for i in inputready:
             if i == 0:
                 buff = input()
@@ -211,8 +219,9 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                     tmp = 'startgame ACK'
                     ssock.send(tmp.encode('UTF-8'))
                     sJudge(hanabi_addr, rID, int(buf[1]))
+                    break
                 elif (len(buf) == 2 and buf[0] == 'leave' and buf[1] == 'ACK'):
-                    leave = True
+                    Leave = True
                     break
                 elif (buf[0] == 'update'):
                     num_player = int(buf[1])
@@ -222,7 +231,7 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                         room_ready_list.append((buf[2*i+2], buf[2*i+3]))
                     ssock.send("update ACK".encode('UTF-8'))
 
-        if (leave == True):
+        if (Leave == True):
             break
 
 
