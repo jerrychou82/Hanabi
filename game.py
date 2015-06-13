@@ -32,7 +32,7 @@ class Game:
         self.fail_num       = fail
         self.num_card_left  = 50 - player_num * 4
         self.hint_list      = []
-        self.garbage        = garbage
+        self.garbage        = []
         self.hanabi         = [0, 0, 0, 0, 0]
         self.buf            = buf
         self.players_init(buf)
