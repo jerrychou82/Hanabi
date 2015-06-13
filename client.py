@@ -169,9 +169,13 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
 
     leave = False
 
+    # a tuple list to record the status in the room
+    room_list = []
+
     while (True):
         print ('[room ' + str(rID) + '] waiting for user command...')
-
+        print(room_list)
+        Room_Style.print_room(rID, room_list)
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
         for i in inputready:
             if i == 0:
@@ -207,6 +211,13 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                 elif (len(buf) == 2 and buf[0] == 'leave' and buf[1] == 'ACK'):
                     leave = True
                     break
+                elif (buf[0] == 'update'):
+                    num_player = int(buf[1])
+                    room_list = []
+                    for i in range(num_player):
+                        print(buf[2*i+2] + " " + buf[2*i+3])
+                        room_list.append((buf[2*i+2], buf[2*i+3]))
+                    ssock.send("update ACK".encode('UTF-8'))
 
         if (leave == True):
             break

@@ -72,6 +72,7 @@ class Room:
         self.user_list = user_list
         self.user_status = user_status
         self.max_unum = max_unum
+        self.user_sock = []
 
     def show_room(self):
         print("ID: " + str(self.rID) + " Status: " + self.rstatus)

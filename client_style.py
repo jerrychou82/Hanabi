@@ -62,3 +62,35 @@ class Lobby:
         print()
 
 
+class Room_Style:
+    
+    @staticmethod
+    def print_room(rid, room_list):
+        print(room_list)
+        num_player = len(room_list)
+        print(num_player)
+        for i in range(6 - num_player):
+            room_list.append(("", ""))
+        line = "|  %8s" % room_list[0][0]  + "   |   %8s" % room_list[1][0] + "   |  %8s" % room_list[2][0] + "   |"
+        
+        os.system('clear')
+        print("+------------------------------------------+")
+        print("|                  Room%d" % rid  + "                   |")
+        print("+------------------------------------------+")
+        print("| \x1b[1;34mHost\x1b[0m        |              |             |")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print(line)
+        print("|  %8s" % room_list[0][0]  + "   |   %8s" % room_list[1][0] + "   |  %8s" % room_list[2][0] + "   |")
+        print("+-------------+--------------+-------------+")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print("|             |              |             |")
+        print("+------------------------------------------+")
+        for user in room_list:
+            print(user[0] + " " + user[1])
+
+

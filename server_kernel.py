@@ -112,6 +112,7 @@ class Server:
                     room_user_list      = []
                     room_user_status    = []
                     room_user_list.append(user)
+                    room.user_sock.append(s)
                     room_user_status.append("UNREADY")
                     room.user_list      = room_user_list
                     room.user_status    = room_user_status
@@ -132,6 +133,7 @@ class Server:
                     user.ustatus = "ROOM"
                     user.roomID = rid
                     room.user_list.append(user)
+                    room.user_sock.append(s)
                     room.user_status.append("UNREADY")
                     print("Go to room: " + str(rid))
                     s.send("groom ACK".encode('UTF-8'))
@@ -196,6 +198,12 @@ class Server:
                         self.room_list[rid].user_status[rflag] = "UNREADY"
                         s.send("unready ACK".encode('UTF-8'))
                         print(user.uname + " unready!")
+                    
+                    # update every player
+                    msg = self.make_room_update(rid)
+                    for cs in self.room_list[rid].user_sock:
+                        cs.send(msg.encode('UTF-8'))
+                        ack_msg = cs.recv(4096)
 
         # client clicks start in the room
         elif msg_list[0] == "start":
@@ -267,6 +275,13 @@ class Server:
     def show_userlist(self):
         for u in self.user_list:
             u.show_user()
+
+    def make_room_update(self, rid):
+        msg = "update " + str(len(self.room_list[rid].user_list))
+        for i in range(len(self.room_list[rid].user_list)):
+            msg += " " + self.room_list[rid].user_list[i].uname + " " + self.room_list[rid].user_status[i]
+        return msg
+
 
 def make_lobby_info(user_list, room_list):
     
