@@ -16,6 +16,7 @@ usage: python3 client.py [host] [port]
 
 user_list = []
 room_list = []
+room_ready_list = []
 ssock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 pygameflag = 0
@@ -170,12 +171,14 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
     leave = False
 
     # a tuple list to record the status in the room
-    room_list = []
+    room_ready_list = []
+    # update
+    msg = "updateroom " + str(rID)
+    ssock.send(msg.encode('UTF-8'))
 
     while (True):
         print ('[room ' + str(rID) + '] waiting for user command...')
-        print(room_list)
-        Room_Style.print_room(rID, room_list)
+        Room_Style.print_room(rID, room_ready_list)
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
         for i in inputready:
             if i == 0:
@@ -213,10 +216,10 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                     break
                 elif (buf[0] == 'update'):
                     num_player = int(buf[1])
-                    room_list = []
+                    room_ready_list = []
                     for i in range(num_player):
                         print(buf[2*i+2] + " " + buf[2*i+3])
-                        room_list.append((buf[2*i+2], buf[2*i+3]))
+                        room_ready_list.append((buf[2*i+2], buf[2*i+3]))
                     ssock.send("update ACK".encode('UTF-8'))
 
         if (leave == True):

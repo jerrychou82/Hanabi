@@ -51,12 +51,6 @@ class Lobby:
             else:
                 msg += "                    |"
             print(msg)
-        '''
-        for u in user_list:
-            print ('\tuser ' + u.uname + ' status ' + u.ustatus)
-        for r in room_list:
-            print ('\trID ' + str(r.rID) + ' max_unum ' + str(r.max_unum) + ' cur_unum ' + str(r.cur_unum))
-        '''
         print("|                     |                    |")
         print("+------------------------------------------+")
         print()
@@ -66,14 +60,11 @@ class Room_Style:
     
     @staticmethod
     def print_room(rid, room_list):
-        print(room_list)
         num_player = len(room_list)
-        print(num_player)
         for i in range(6 - num_player):
             room_list.append(("", ""))
-        line = "|  %8s" % room_list[0][0]  + "   |   %8s" % room_list[1][0] + "   |  %8s" % room_list[2][0] + "   |"
         
-        os.system('clear')
+        # os.system('clear')
         print("+------------------------------------------+")
         print("|                  Room%d" % rid  + "                   |")
         print("+------------------------------------------+")
@@ -81,7 +72,6 @@ class Room_Style:
         print("|             |              |             |")
         print("|             |              |             |")
         print("|             |              |             |")
-        print(line)
         print("|  %8s" % room_list[0][0]  + "   |   %8s" % room_list[1][0] + "   |  %8s" % room_list[2][0] + "   |")
         print("+-------------+--------------+-------------+")
         print("|             |              |             |")
@@ -90,7 +80,8 @@ class Room_Style:
         print("|             |              |             |")
         print("|             |              |             |")
         print("+------------------------------------------+")
-        for user in room_list:
-            print(user[0] + " " + user[1])
+        
+        # for user in room_list:
+            # print(user[0] + " " + user[1])
 
 

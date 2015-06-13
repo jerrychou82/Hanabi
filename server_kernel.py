@@ -205,6 +205,14 @@ class Server:
                         cs.send(msg.encode('UTF-8'))
                         ack_msg = cs.recv(4096)
 
+        # update every player
+        elif msg_list[0] == "updateroom":
+            rid = int(msg_list[1])
+            msg = self.make_room_update(rid)
+            for cs in self.room_list[rid].user_sock:
+                cs.send(msg.encode('UTF-8'))
+                ack_msg = cs.recv(4096)
+
         # client clicks start in the room
         elif msg_list[0] == "start":
             rid = int(msg_list[1])
