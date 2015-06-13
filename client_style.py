@@ -80,9 +80,9 @@ class Room_Style:
         print("|             |              |             |")
         print("|             |              |             |")
         print("|    "\
-                + ("\x1b[1;31m" if room_list[0][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |     " \
-                + ("\x1b[1;31m" if room_list[1][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |    " \
-                + ("\x1b[1;31m" if room_list[2][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |")
+                + ("\x1b[1;31m" if room_list[3][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |     " \
+                + ("\x1b[1;31m" if room_list[4][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |    " \
+                + ("\x1b[1;31m" if room_list[5][1] == "READY" else "\x1b[1;30m") + "Ready" + "\x1b[0m" + "    |")
         print("|             |              |             |")
         print("|  %8s" % room_list[3][0]  + "   |   %8s" % room_list[4][0] + "   |  %8s" % room_list[5][0] + "   |")
         print("+------------------------------------------+")

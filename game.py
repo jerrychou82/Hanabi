@@ -75,7 +75,7 @@ class Game:
         # print ('Hanabi ' + str(self.hanabi))
         cards = []
         for i in range(5):
-            cards.append((i,self.hanabi[i]))
+            cards.append((i+1,self.hanabi[i]))
         Game.print_cards(cards)
 
     def show_hint_list(self):
