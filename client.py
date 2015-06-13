@@ -9,6 +9,7 @@ import time
 from game_control import *
 import game
 from client_style import *
+from game_memo import *
 
 '''
 usage: python3 client.py [host] [port]
@@ -52,9 +53,19 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     game_player_num = -1
 
 
+    # tkinter
+    pid = os.fork()
+    if pid == 0:
+        root = Tk()
+        root.title("Hanabi Memo")
+        app = GUIDemo(master=root)
+        app.mainloop()
+        exit()
+
+
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
-        (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [])
+        (inputready, outputready, exceptrdy) = select.select([0, ssock, jsock], [], [], 1)
 
         ok = False
         for i in inputready:
@@ -92,7 +103,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
             break
     
     print ('Now initial Game class...')
-    G = game.Game(player_num=game_player_num, buf=buff)
+    G = game.Game(player_num=game_player_num, buf=buff, playerID=gameID)
     G.show_status()
 
 

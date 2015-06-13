@@ -26,7 +26,7 @@ class Game:
         return msg
 
 
-    def __init__(self, player_num=0, hint=8, fail=0, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf=""):
+    def __init__(self, player_num=0, hint=8, fail=0, num_card_left=0, garbage=[], hint_list=[], hanabi=[], buf="", playerID=-1):
         self.player_num     = player_num
         self.hint_num       = hint
         self.fail_num       = fail
@@ -35,6 +35,7 @@ class Game:
         self.garbage        = []
         self.hanabi         = [0, 0, 0, 0, 0]
         self.buf            = buf
+        self.playerID       = playerID
         self.players_init(buf)
     
     def hit(self, player, cardidx, card_old, card_new):  # two cards are old and new respectively
@@ -85,7 +86,7 @@ class Game:
 
     def show_status(self):
         os.system('clear')
-        print ('player_num %d Hint %d Fail %d' % (self.player_num, self.hint_num, self.fail_num))
+        print (('[Player %d' % self.playerID  if self.playerID != -1 else '[Judge')+ '] # Players: %d Hint: %d Fail %d' % (self.player_num, self.hint_num, self.fail_num))
         self.show_garbage()
         self.show_hanabi()
         self.show_hint_list()
