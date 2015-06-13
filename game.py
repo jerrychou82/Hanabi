@@ -106,6 +106,9 @@ class Game:
                 card_list.append(card)
                 print("  (" + str(buf[2+8*i+2*j+1]) + ", " + str(buf[2+8*i+2*j+2]) + ")")
             self.players[i] = Game_player(cards=card_list)
+    
+    def get_score(self):
+        return sum(self.hanabi)
 
 
 class Game_player:

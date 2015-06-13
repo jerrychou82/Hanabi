@@ -72,8 +72,8 @@ class Server:
         info = make_lobby_info(self.user_list, self.room_list)
         info = "update " + info
         for user in self.user_list:
-            user.usock.send(info.encode('UTF-8'))
-        
+            if user.ustatus == "IDLE":
+                user.usock.send(info.encode('UTF-8')
 
     # user message handle
     def user_msg_handle(self, s, user, msg):
