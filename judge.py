@@ -106,7 +106,7 @@ class Judge:
 
             # check whether end
             if self.jgame.fail_num >= 3:
-                end_game()
+                break
 
             # send yourturn to player
             cpidx = self.cur_player_index # current player index
@@ -182,16 +182,19 @@ class Judge:
             self.cur_player_index = (cpidx + 1) % self.conn_num
 
         # end of game
-        end_game("Finish")
-
+        if self.jgame.num_card_left != 50:
+            self.end_game("Failed")
+        else:
+            self.end_game("Finish")
 
     def end_game(self, msg):
-        print("End of game")
+        print("End of game: " + msg)
         info = "endgame " + str(self.jgame.get_score()) + " " + msg
         for s in self.csock_list:
             s.send(info.encode('UTF-8'))
             s.close()
-
+        self.conn_sock.shutdown(1)
+        self.conn_sock.close()
 
     # shuffle the desk and return the serving result
     def shuffle_and_serve(self):

@@ -73,7 +73,7 @@ class Server:
         info = "update " + info
         for user in self.user_list:
             if user.ustatus == "IDLE":
-                user.usock.send(info.encode('UTF-8')
+                user.usock.send(info.encode('UTF-8'))
 
     # user message handle
     def user_msg_handle(self, s, user, msg):
@@ -257,7 +257,8 @@ class Server:
                             judge_IP_list.append(u.uIP)
                         judge = Judge(jID=len(self.judge_list), port=jport, room_in_charge=rid, IP_list=judge_IP_list)
                         judge.run()
-                    
+                        
+
                     print("Fork judge")
                     time.sleep(1)
                     line = os.read(pipein, 32)
