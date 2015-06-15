@@ -53,24 +53,6 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     game_player_num = -1
 
 
-    # tkinter
-    rpipe, wpipe = os.pipe()
-    wpipe = os.fdopen(wpipe, "w")
-    rpipe = os.fdopen(rpipe, "r")
-    flags = fcntl(rpipe, F_GETFL)
-    fcntl(rpipe, F_SETFL, flags | os.O_NONBLOCK)
-    
-    pid = os.fork()
-    if pid == 0:
-        rpipe.close()
-        if os.environ.get('DISPLAY') != None:
-            root = Tk()
-            root.title("Hanabi Memo")
-            app = GUIDemo(master=root, pipe=wpipe)
-            app.mainloop()
-        exit()
-    
-    wpipe.close()
 
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
@@ -115,6 +97,25 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     print ('Now initial Game class...')
     G = game.Game(player_num=game_player_num, buf=buff, playerID=gameID)
     G.show_status()
+    
+    # tkinter
+    rpipe, wpipe = os.pipe()
+    wpipe = os.fdopen(wpipe, "w")
+    rpipe = os.fdopen(rpipe, "r")
+    flags = fcntl(rpipe, F_GETFL)
+    fcntl(rpipe, F_SETFL, flags | os.O_NONBLOCK)
+    
+    pid = os.fork()
+    if pid == 0:
+        rpipe.close()
+        if os.environ.get('DISPLAY') != None:
+            root = Tk()
+            root.title("Hanabi Memo")
+            app = GUIDemo(master=root, pipe=wpipe, player_num=game_player_num, ID=gameID)
+            app.mainloop()
+        exit()
+    
+    wpipe.close()
 
 
     while (True):  # game loop
@@ -139,7 +140,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                                 # pipe from tkinter
                                 msg = rpipe.read(4096)
                                 if len(msg) != 0:
-                                    data = "hit 1"
+                                    data = msg
                                     break
                             else:
                                 data = input("Your turn: ")
