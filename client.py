@@ -2,7 +2,7 @@ import socket
 import select
 import sys
 import time
-
+from fcntl import *
 # import pygame
 # from screen_figure import handle_event
 
@@ -54,15 +54,23 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
 
 
     # tkinter
+    rpipe, wpipe = os.pipe()
+    wpipe = os.fdopen(wpipe, "w")
+    rpipe = os.fdopen(rpipe, "r")
+    flags = fcntl(rpipe, F_GETFL)
+    fcntl(rpipe, F_SETFL, flags | os.O_NONBLOCK)
+    
     pid = os.fork()
     if pid == 0:
+        rpipe.close()
         if os.environ.get('DISPLAY') != None:
             root = Tk()
             root.title("Hanabi Memo")
-            app = GUIDemo(master=root)
+            app = GUIDemo(master=root, pipe=wpipe)
             app.mainloop()
         exit()
-
+    
+    wpipe.close()
 
     while (True):  # game init
         print ('[judge ' + str(rID) + '] waiting for judge command...')
@@ -100,6 +108,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     '''
 
                     break
+
         if (ok == True):
             break
     
@@ -110,7 +119,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
 
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
-        (inputready, outputready, exceptrdy) = select.select([0, jsock], [], [])
+        (inputready, outputready, exceptrdy) = select.select([0, jsock, rpipe], [], [])
         EndGame = False
         for i in inputready:
             if i == 0:
@@ -122,7 +131,20 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
 
                 if msg_list[0] == "yourturn":
                     while (True):
-                        data = input("Your turn: ")
+
+                        # select stdin or pipe
+                        while 1:
+                            rlist, wlist, elist = select.select([0,rpipe], [], [])
+                            if rlist[0] == rpipe:
+                                # pipe from tkinter
+                                msg = rpipe.read(4096)
+                                if len(msg) != 0:
+                                    data = "hit 1"
+                                    break
+                            else:
+                                data = input("Your turn: ")
+                                break
+ 
                         cmd_list = data.split(' ')
                         
                         if cmd_list[0] == "hit" and len(cmd_list) == 2:
@@ -182,6 +204,8 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
                 G.show_status()
                 print ('>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>')
+            
+        
         if (EndGame == True):
             break
     jsock.close()

@@ -1,11 +1,12 @@
 from tkinter import *
  
 class GUIDemo(Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, pipe=None):
         Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
- 
+        self.pipe = pipe 
+
     def createWidgets(self):
 
         self.cards      = []
@@ -24,6 +25,13 @@ class GUIDemo(Frame):
                 radio.grid(row=1+j,column=2*i)
                 radio = Radiobutton(self, text=str(j+1), variable=var_number, indicatoron=0, value=j, width=5)
                 radio.grid(row=1+j,column=2*i+1)
+
+        hitbut = Button(self, text="Hit", command=self.hitcommand)
+        hitbut.grid(row=6, column=1)    
+
+    def hitcommand(self):
+        self.pipe.write("client hit")
+        self.pipe.flush()
 
 if __name__ == '__main__':
     root = Tk()
