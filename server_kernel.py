@@ -53,7 +53,7 @@ class Server:
                 print("Matched: " + str(user.uname))
                 data = s.recv(4096)
                 if not data: # user leave
-                    rid = user.roomID
+                    rid = int(user.roomID)
                     print(user.uname + " leaves at room " + str(rid))
                     room = self.room_list[rid]
                     room.user_list.remove(user)
@@ -68,11 +68,11 @@ class Server:
             print(data)
      
     # update everyone in the lobby
-    def lobby_update(self):
+    def lobby_update(self, nuser):
         info = make_lobby_info(self.user_list, self.room_list)
         info = "update " + info
         for user in self.user_list:
-            if user.ustatus == "IDLE":
+            if user.ustatus == "IDLE" and user != nuser:
                 user.usock.send(info.encode('UTF-8'))
 
     # user message handle
@@ -85,6 +85,7 @@ class Server:
             user.ustatus = "IDLE"
             s.send(("login ACK").encode('UTF-8'))
             print("New user: " + msg_list[1])
+            self.lobby_update(user)
         
         # client asks for the informations: player list, room list
         elif msg_list[0] == "update":
@@ -271,6 +272,8 @@ class Server:
             
             s.send("start DENY".encode('UTF-8'))
             print("Start denied")
+        
+
 
     # command msg
     def command(self):

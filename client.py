@@ -440,7 +440,7 @@ def main():
                         if (r == ''):
                             continue
                         ri = r.split(':')
-                        rr = Rnode(rID=ri[0], max_unum=ri[1], cur_unum=r[2])
+                        rr = Rnode(rID=int(ri[0]), max_unum=int(ri[1]), cur_unum=int(r[2]))
                         room_list.append(rr)
                     print ('Now dumping item_list')
                     dump_roomlist(room_list)
