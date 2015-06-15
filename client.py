@@ -56,10 +56,11 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     # tkinter
     pid = os.fork()
     if pid == 0:
-        root = Tk()
-        root.title("Hanabi Memo")
-        app = GUIDemo(master=root)
-        app.mainloop()
+        if os.environ.get('DISPLAY') != None:
+            root = Tk()
+            root.title("Hanabi Memo")
+            app = GUIDemo(master=root)
+            app.mainloop()
         exit()
 
 
