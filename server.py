@@ -41,6 +41,9 @@ while 1:
         elif s == conn_sock:
             server.user_con(conn_sock)
 
+        elif s in server.judge_list:
+            server.judge_msg(s)
+
         # message
         else:
             server.user_msg(s)

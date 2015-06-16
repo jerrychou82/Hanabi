@@ -44,7 +44,7 @@ class User:
         
 
     def show_user(self):
-        print("Name: " + str(self.uname) + " Status: " + self.ustatus)
+        print("Name: " + str(self.uname) + " Status: " + self.ustatus + " RoomID: " + str(self.roomID))
 
 class Room:
 
@@ -73,6 +73,7 @@ class Room:
         self.user_status = user_status
         self.max_unum = max_unum
         self.user_sock = []
+        self.game_time = 0
 
     def show_room(self):
         print("ID: " + str(self.rID) + " Status: " + self.rstatus)

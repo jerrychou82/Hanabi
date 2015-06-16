@@ -99,28 +99,37 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     G.show_status()
     
     # tkinter
-    rpipe, wpipe = os.pipe()
-    wpipe = os.fdopen(wpipe, "w")
-    rpipe = os.fdopen(rpipe, "r")
-    flags = fcntl(rpipe, F_GETFL)
-    fcntl(rpipe, F_SETFL, flags | os.O_NONBLOCK)
-    
-    pid = os.fork()
-    if pid == 0:
-        rpipe.close()
-        if os.environ.get('DISPLAY') != None:
-            root = Tk()
-            root.title("Hanabi Memo")
-            app = GUIDemo(master=root, pipe=wpipe, player_num=game_player_num, ID=gameID)
-            app.mainloop()
-        exit()
-    
-    wpipe.close()
+    if os.environ.get('DISPLAY') != None:
+        tkflag = 1
+    else:
+        tkflag = 0
+        
+    if tkflag == 1:
+        rpipe, wpipe = os.pipe()
+        wpipe = os.fdopen(wpipe, "w")
+        rpipe = os.fdopen(rpipe, "r")
+        flags = fcntl(rpipe, F_GETFL)
+        fcntl(rpipe, F_SETFL, flags | os.O_NONBLOCK)
+        
+        pid = os.fork()
+        if pid == 0:
+            rpipe.close()
+            if os.environ.get('DISPLAY') != None:
+                root = Tk()
+                root.title("Hanabi Memo")
+                app = GUIDemo(master=root, pipe=wpipe, player_num=game_player_num, ID=gameID)
+                app.mainloop()
+            exit()
+        
+        wpipe.close()
 
-
+    # select read
+    rqueue = [0, jsock]
+    if tkflag == 1:
+        rqueue.append(rpipe)
     while (True):  # game loop
         print ('[judge ' + str(rID) + '] inside game loop XD')
-        (inputready, outputready, exceptrdy) = select.select([0, jsock, rpipe], [], [])
+        (inputready, outputready, exceptrdy) = select.select(rqueue, [], [])
         EndGame = False
         for i in inputready:
             if i == 0:
@@ -134,18 +143,21 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
                     while (True):
 
                         # select stdin or pipe
-                        while 1:
-                            rlist, wlist, elist = select.select([0,rpipe], [], [])
-                            if rlist[0] == rpipe:
-                                # pipe from tkinter
-                                msg = rpipe.read(4096)
-                                if len(msg) != 0:
-                                    data = msg
+                        if tkflag == 1:
+                            while 1:
+                                rlist, wlist, elist = select.select([0,rpipe], [], [])
+                                if rlist[0] == rpipe:
+                                    # pipe from tkinter
+                                    msg = rpipe.read(4096)
+                                    if len(msg) != 0:
+                                        data = msg
+                                        break
+                                else:
+                                    data = input("Your turn: ")
                                     break
-                            else:
-                                data = input("Your turn: ")
-                                break
- 
+                        else:
+                            data = input("Your turn: ")
+
                         cmd_list = data.split(' ')
                         
                         if cmd_list[0] == "hit" and len(cmd_list) == 2:
@@ -217,7 +229,7 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
 
 
     # a tuple list to record the status in the room
-    room_ready_list = []
+    room_ready_list = [("","")] * 6
     # update
     msg = "updateroom " + str(rID)
     ssock.send(msg.encode('UTF-8'))
@@ -231,23 +243,28 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
             if i == 0:
                 buff = input()
                 buf = buff.split(' ')
-                if (len(buf) == 2 and buf[0] == 'ready' and is_number(buf[1])):
+                if buf[0] == 'ready':
                     tmp = 'ready ' + str(rID)
                     print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
                     ssock.send(tmp.encode('UTF-8'))
-                elif (len(buf) == 2 and buf[0] == 'unready' and is_number(buf[1])):
+                elif buf[0] == 'unready':
                     tmp = 'unready ' + str(rID)
                     print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
                     ssock.send(tmp.encode('UTF-8'))
-                elif (len(buf) == 2 and buf[0] == 'start' and is_number(buf[1])):
+                elif buf[0] == 'start':
                     tmp = 'start ' + str(rID)
                     print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
                     ssock.send(tmp.encode('UTF-8'))
-                elif (len(buf) == 2 and buf[0] == 'leave' and is_number(buf[1])):
-                    tmp = 'leave ' + str(rID)
+                elif buf[0] == 'leave':
+                    tmp = 'leaveroom ' + str(rID)
                     print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
                     time.sleep(2)
                     ssock.send(tmp.encode('UTF-8'))
+                elif buf[0] == "update":
+                    tmp = "updateroom " + str(rID)
+                    print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
+                    ssock.send(tmp.encode('UTF-8'))
+
                 else:
                     print ('nothing happen')
             if i == ssock:
@@ -264,10 +281,10 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                     break
                 elif (buf[0] == 'update'):
                     num_player = int(buf[1])
-                    room_ready_list = []
+                    room_ready_list = [("","")] * 6
                     for i in range(num_player):
                         print(buf[2*i+2] + " " + buf[2*i+3])
-                        room_ready_list.append((buf[2*i+2], buf[2*i+3]))
+                        room_ready_list[i] = ((buf[2*i+2], buf[2*i+3]))
                     ssock.send("update ACK".encode('UTF-8'))
 
         if (Leave == True):

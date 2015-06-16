@@ -110,7 +110,7 @@ class Judge:
 
             # send yourturn to player
             cpidx = self.cur_player_index # current player index
-
+            print("CPIDX: " + str(cpidx))
             self.csock_list[cpidx].send("yourturn".encode('UTF-8'))
             data = self.csock_list[cpidx].recv(4096)
             msg = data.decode('UTF-8')

@@ -61,8 +61,6 @@ class Room_Style:
     @staticmethod
     def print_room(rid, room_list):
         num_player = len(room_list)
-        for i in range(6 - num_player):
-            room_list.append(("", ""))
         
         # os.system('clear')
         print("+------------------------------------------+")

@@ -14,8 +14,8 @@ class Server:
         # list
         self.user_list  = []
         self.room_list  = []
-        self.judge_list = []
-        
+        self.judge_list = ['None'] * Server.ROOM_NUM   # pipein
+
         # rooms init
         for i in range(Server.ROOM_NUM):
             room = Room(rID=i)
@@ -39,6 +39,30 @@ class Server:
         if user.usock == csock:
             print("Success")
 
+    # judge message
+    def judge_msg(self, s):
+        rid = self.judge_list.index(s)
+        data = os.read(s, 4096)        
+        msg = data.decode('UTF-8')
+        print("Receive from judge: " + msg)
+        
+        # get roomID
+        msg_list = msg.split(' ')
+        rid = int(msg_list[1])
+        self.room_list[rid].game_time += 1
+
+        # change room status
+        self.room_list[rid].rstatus = "WAIT"
+        
+        # change user status
+        for u in self.user_list:
+            if u.roomID == rid:
+                u.ustatus = "ROOM"
+        
+        # change user status in room
+        for i in range(len(self.room_list[rid].user_status)):
+            self.room_list[rid].user_status[i] = "UNREADY"
+
     # Find who send the message
     def user_msg(self, s):
         
@@ -53,19 +77,21 @@ class Server:
                 print("Matched: " + str(user.uname))
                 data = s.recv(4096)
                 if not data: # user leave
-                    rid = int(user.roomID)
-                    print(user.uname + " leaves at room " + str(rid))
-                    room = self.room_list[rid]
-                    room.user_list.remove(user)
+                    if user.ustatus != "IDLE":
+                        rid = int(user.roomID)
+                        print(user.uname + " leaves at room " + str(rid))
+                        room = self.room_list[rid]
+                        room.user_list.remove(user)
                     self.user_list.remove(user)
                     self.rqueue.remove(user.usock)
-                msg = data.decode('UTF-8')
-                self.user_msg_handle(s, user, msg)
+                else:
+                    msg = data.decode('UTF-8')
+                    self.user_msg_handle(s, user, msg)
         
         if uflag == 0:
             print("Non matched")
             data = s.recv(4096)
-            print(data)
+            print("[" + data + "]")
      
     # update everyone in the lobby
     def lobby_update(self, nuser):
@@ -76,7 +102,34 @@ class Server:
                 user.usock.send(info.encode('UTF-8'))
 
     # user message handle
+    '''
+        Argument:
+            s:      socket
+            user:   user
+            msg:    user message
+        Type:
+            lobby:
+            room:
+    '''
     def user_msg_handle(self, s, user, msg):
+        
+        if user.ustatus == "CONN":
+            self.user_msg_handle_login(s, user, msg)
+
+        elif user.ustatus == "IDLE":
+            self.user_msg_handle_lobby(s, user, msg)
+        
+        elif user.ustatus == "ROOM":
+            self.user_msg_handle_room(s, user, msg)
+
+
+    # handle user message from login
+    '''
+    Type:
+        login
+    '''
+    def user_msg_handle_login(self, s, user, msg):
+        
         msg_list = msg.split(' ')
         
         # select service
@@ -86,13 +139,28 @@ class Server:
             s.send(("login ACK").encode('UTF-8'))
             print("New user: " + msg_list[1])
             self.lobby_update(user)
+
+
+    # handle user message from lobby
+    '''
+    Type:
+        login
+        update
+        quit
+        croom
+        groom
+    '''
+    def user_msg_handle_lobby(self, s, user, msg):
+        
+        msg_list = msg.split(' ')
         
         # client asks for the informations: player list, room list
-        elif msg_list[0] == "update":
-            info = make_lobby_info(self.user_list, self.room_list)
-            info = "update " + info
-            s.send(info.encode('UTF-8'))
-            print("Send: " + info)
+        if msg_list[0] == "update":
+            if user.ustatus == "IDLE":
+                info = make_lobby_info(self.user_list, self.room_list)
+                info = "update " + info
+                s.send(info.encode('UTF-8'))
+                print("Send: " + info)
 
         # client quits the game
         elif msg_list[0] == "quit":
@@ -150,8 +218,22 @@ class Server:
                     s.send(("groom DENY".encode('UTF-8')))
                     print("Go to room deny: room full")
 
+
+    # handle user message from room
+    '''
+    Type:
+        leave
+        ready
+        unready
+        updateroom
+        start
+    '''
+    def user_msg_handle_room(self, s, user, msg):
+        
+        msg_list = msg.split(' ')
+
         # client leaves the room
-        elif msg_list[0] == "leave":
+        if msg_list[0] == "leave":
             rid = int(msg_list[1])
             if rid < 0 or rid >= Server.ROOM_NUM:
                 s.send(("leave DENY".encode('UTF-8')))
@@ -248,9 +330,11 @@ class Server:
 
                     # start judge
                     pipein, pipeout = os.pipe()
-                    jport = rid + self.port_num + 10
+                    jport = rid * 50 + self.port_num + self.room_list[rid].game_time
+                    self.rqueue.append(pipein)
+                    self.judge_list[rid] = pipein
+                    
                     pid = os.fork()
-
                     if pid == 0:
                         os.write(pipeout, "This message is from pipe".encode('UTF-8'))
                         judge_IP_list = []
@@ -258,6 +342,11 @@ class Server:
                             judge_IP_list.append(u.uIP)
                         judge = Judge(jID=len(self.judge_list), port=jport, room_in_charge=rid, IP_list=judge_IP_list)
                         judge.run()
+                        print("judge: finish")
+                        msg = "judgefinish " + str(rid)
+                        print("Judge sends " + msg)
+                        os.write(pipeout, msg.encode('UTF-8'))
+                        exit()
                         
 
                     print("Fork judge")
@@ -276,6 +365,9 @@ class Server:
 
 
     # command msg
+    '''
+    handle message from server's command line
+    '''
     def command(self):
         
         data = input()
