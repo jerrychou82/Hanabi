@@ -213,7 +213,7 @@ class Server:
                     room.user_sock.append(s)
                     room.user_status.append("UNREADY")
                     print("Go to room: " + str(rid))
-                    s.send("groom ACK".encode('UTF-8'))
+                    s.send(("groom ACK " + str(len(room.user_list)-1)).encode('UTF-8'))
                 else:
                     s.send(("groom DENY".encode('UTF-8')))
                     print("Go to room deny: room full")

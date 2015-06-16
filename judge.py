@@ -158,6 +158,10 @@ class Judge:
                 info    = "throw " + str(cpidx) + " " + str(cidx) + " " + str(ccolor) + " " + str(cnumber)
                 print("Player" + str(cpidx) + " throws")
 
+            else:
+                # some player leaves
+                self.end_game("Someone leaves")
+
             # send info to everyone
             if msg_list[0] == "hit" or msg_list[0] == "throw":
                 for s in self.csock_list:

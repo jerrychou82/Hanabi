@@ -224,7 +224,7 @@ def sJudge(hanabi_addr, rID, jport):  #TODO maybe should have some arguments...?
     jsock.close()
 
 
-def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a port input and create a new socket itself
+def sRoom(hanabi_addr, ssock, rID, uID):  #TODO In fact this function will have a port input and create a new socket itself
     print ('[room ' + str(rID) + '] inside room XD')
 
 
@@ -236,7 +236,7 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
 
     while (True):
         print ('[room ' + str(rID) + '] waiting for user command...')
-        Room_Style.print_room(rID, room_ready_list)
+        Room_Style.print_room(rID, uID, room_ready_list)
         (inputready, outputready, exceptrdy) = select.select([0, ssock], [], [])
         Leave = False
         for i in inputready:
@@ -275,6 +275,10 @@ def sRoom(hanabi_addr, ssock, rID):  #TODO In fact this function will have a por
                     tmp = 'startgame ACK'
                     ssock.send(tmp.encode('UTF-8'))
                     sJudge(hanabi_addr, rID, int(buf[1]))
+                    # update
+                    tmp = "updateroom " + str(rID)
+                    print ('[room ' + str(rID) + '] i will send \'' + tmp + '\'')
+                    ssock.send(tmp.encode('UTF-8'))
                     break
                 elif (len(buf) == 2 and buf[0] == 'leave' and buf[1] == 'ACK'):
                     Leave = True
@@ -386,7 +390,7 @@ def main():
                         # print ('what i recv is ' + data.decode('UTF-8'))
                         if (data.decode('UTF-8') == 'croom ACK'):  #it will have port number later...
                             print ('croom success')
-                            sRoom(hanabi_addr, ssock, int(buf[1]))
+                            sRoom(hanabi_addr, ssock, int(buf[1]), 0)
                             break
                         else:
                             print ('croom fail')
@@ -406,9 +410,11 @@ def main():
                     while (True):
                         data = ssock.recv(4096)
                         print ('what i recv is ' + data.decode('UTF-8'))
-                        if (data.decode('UTF-8') == 'groom ACK'):
+                        msg = data.decode('UTF-8')
+                        msg_list = msg.split(' ')
+                        if (msg_list[1] == 'ACK'):
                             print ('groom success')
-                            sRoom(hanabi_addr, ssock, int(buf[1]))
+                            sRoom(hanabi_addr, ssock, int(buf[1]), int(msg_list[2]))
                             break
                         else:
                             print ('groom fail')

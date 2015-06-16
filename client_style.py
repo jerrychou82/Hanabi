@@ -59,12 +59,13 @@ class Lobby:
 class Room_Style:
     
     @staticmethod
-    def print_room(rid, room_list):
+    def print_room(rid, uID, room_list):
+        os.system('clear')
         num_player = len(room_list)
         
         # os.system('clear')
         print("+------------------------------------------+")
-        print("|                  Room%d" % rid  + "                   |")
+        print("| \x1b[1,35mPlayer%d" % uID + "\x1b[0m          Room%d" % rid  + "                   |")
         print("+------------------------------------------+")
         print("| \x1b[1;34mHost\x1b[0m        |              |             |")
         print("|             |              |             |")
