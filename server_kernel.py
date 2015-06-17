@@ -233,7 +233,7 @@ class Server:
         msg_list = msg.split(' ')
 
         # client leaves the room
-        if msg_list[0] == "leave":
+        if msg_list[0] == "leaveroom":
             rid = int(msg_list[1])
             if rid < 0 or rid >= Server.ROOM_NUM:
                 s.send(("leave DENY".encode('UTF-8')))
